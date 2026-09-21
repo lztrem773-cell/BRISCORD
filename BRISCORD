@@ -1,0 +1,2343 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BRISCORD | Comunidade</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #7c3aed; --primary-bright: #a855f7;
+    --accent: #06b6d4; --accent-bright: #22d3ee;
+    --danger: #ef4444; --success: #22c55e;
+    --darker: #030409; --panel: #0a0c18; --panel-2: #0d1020;
+    --card: #11152a; --border: rgba(124, 58, 237, 0.25);
+    --text: #e4e4f0; --muted: #6b6b8a;
+  }
+  html, body { height: 100%; }
+  body { background: var(--darker); color: var(--text); font-family: 'Rajdhani', sans-serif; overflow: hidden; display: flex; flex-direction: column; }
+
+  .login-screen { position: fixed; inset: 0; z-index: 1000;
+    background: radial-gradient(ellipse at 20% 0%, rgba(124,58,237,0.2), transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(6,182,212,0.15), transparent 50%), var(--darker);
+    display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
+  .login-screen::before { content: ''; position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(124,58,237,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(124,58,237,0.06) 1px, transparent 1px);
+    background-size: 40px 40px; mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%); pointer-events: none; }
+  .login-card { background: linear-gradient(160deg, var(--panel), var(--panel-2)); border: 1px solid rgba(124,58,237,0.4);
+    border-radius: 20px; padding: 45px; max-width: 440px; width: 100%; text-align: center;
+    box-shadow: 0 0 80px rgba(124,58,237,0.4); position: relative; z-index: 2; }
+  .login-card::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 60%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary-bright), transparent); }
+  .login-icon { width: 70px; height: 70px; margin: 0 auto 20px; background: linear-gradient(135deg, var(--primary), var(--accent));
+    border-radius: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 40px rgba(124,58,237,0.7); }
+  .login-icon svg { width: 34px; height: 34px; }
+  .login-card h1 { font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: 900; letter-spacing: 3px; margin-bottom: 8px; color: #fff; }
+  .login-card h1 span { color: var(--accent-bright); }
+  .login-card p { color: var(--muted); font-size: 13px; letter-spacing: 1px; margin-bottom: 25px; }
+
+  .avatar-upload { width: 100px; height: 100px; margin: 0 auto 20px; border-radius: 50%; position: relative;
+    cursor: pointer; background: linear-gradient(135deg, var(--primary-bright), var(--accent));
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+    box-shadow: 0 0 30px rgba(124,58,237,0.5); border: 3px solid rgba(124,58,237,0.4); transition: 0.2s; }
+  .avatar-upload:hover { border-color: var(--primary-bright); box-shadow: 0 0 40px rgba(124,58,237,0.8); }
+  .avatar-upload img { width: 100%; height: 100%; object-fit: cover; }
+  .avatar-upload .initials { font-family: 'Orbitron', sans-serif; font-size: 36px; font-weight: 900; color: #fff; }
+  .avatar-upload .edit-badge { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7);
+    color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 1px; padding: 3px;
+    text-align: center; font-weight: 700; }
+
+  .login-field { margin-bottom: 15px; text-align: left; }
+  .login-field label { display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px;
+    color: var(--primary-bright); margin-bottom: 6px; text-transform: uppercase; font-weight: 700; }
+  .login-field input { width: 100%; padding: 13px 16px; background: rgba(124,58,237,0.05); border: 1px solid rgba(124,58,237,0.3);
+    border-radius: 10px; color: #fff; font-family: 'Rajdhani', sans-serif; font-size: 15px; outline: none; transition: 0.2s; letter-spacing: 0.5px; }
+  .login-field input:focus { border-color: var(--primary-bright); box-shadow: 0 0 20px rgba(124,58,237,0.4); }
+  .login-btn { width: 100%; padding: 15px; margin-top: 10px; background: linear-gradient(135deg, var(--primary), var(--primary-bright));
+    border: none; border-radius: 10px; color: #fff; font-family: 'Rajdhani', sans-serif; font-weight: 800; font-size: 14px;
+    letter-spacing: 2.5px; text-transform: uppercase; cursor: pointer; transition: 0.3s; box-shadow: 0 0 25px rgba(124,58,237,0.5); }
+  .login-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 35px rgba(124,58,237,0.8); }
+
+  .topbar { height: 60px; background: linear-gradient(180deg, #06070f, #04050a); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 20px; gap: 20px; z-index: 100; position: relative; flex-shrink: 0; }
+  .topbar::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--primary-bright), transparent); opacity: 0.4; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-icon { width: 34px; height: 34px; background: linear-gradient(135deg, var(--primary), var(--accent));
+    border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(124,58,237,0.5); }
+  .brand-icon svg { width: 20px; height: 20px; }
+  .brand-text { font-family: 'Orbitron', sans-serif; font-size: 15px; font-weight: 900; letter-spacing: 2px; }
+  .brand-text span { color: var(--accent-bright); }
+  .topbar-spacer { flex: 1; }
+  .my-id-box { display: flex; align-items: center; gap: 8px; padding: 6px 14px; background: rgba(34,197,94,0.08);
+    border: 1px solid rgba(34,197,94,0.3); border-radius: 100px; cursor: pointer; transition: 0.2s; }
+  .my-id-box:hover { background: rgba(34,197,94,0.15); box-shadow: 0 0 15px rgba(34,197,94,0.4); }
+  .my-id-box label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--success); font-weight: 700; }
+  .my-id-box .id-val { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #fff; font-weight: 700; letter-spacing: 1px; }
+
+  .user-info { display: flex; align-items: center; gap: 10px; padding: 4px 14px 4px 4px;
+    background: rgba(124,58,237,0.08); border: 1px solid rgba(124,58,237,0.25); border-radius: 100px;
+    cursor: pointer; transition: 0.2s; }
+  .user-info:hover { background: rgba(124,58,237,0.15); border-color: var(--primary-bright); box-shadow: 0 0 15px rgba(124,58,237,0.4); }
+  .user-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-bright), var(--accent-bright));
+    display: flex; align-items: center; justify-content: center; font-family: 'Orbitron', sans-serif; font-size: 12px; font-weight: 900; color: #fff;
+    overflow: hidden; flex-shrink: 0; }
+  .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .user-name { font-weight: 600; font-size: 13px; letter-spacing: 1px; }
+  .status-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success); }
+
+  .app { display: flex; flex: 1; overflow: hidden; }
+  .servers-bar { width: 76px; background: linear-gradient(180deg, #04050a, #030409); border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; align-items: center; padding: 12px 0; gap: 10px; overflow-y: auto; flex-shrink: 0; }
+  .servers-bar::-webkit-scrollbar { width: 0; }
+  .server-icon { width: 50px; height: 50px; border-radius: 16px; background: linear-gradient(135deg, var(--panel-2), var(--card));
+    border: 1px solid rgba(124,58,237,0.2); display: flex; align-items: center; justify-content: center; cursor: pointer;
+    transition: 0.25s; font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 900; color: #a8a8c0;
+    position: relative; flex-shrink: 0; overflow: hidden; }
+  .server-icon img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+  .server-icon:hover { border-radius: 12px; background: linear-gradient(135deg, var(--primary), var(--primary-bright)); color: #fff;
+    box-shadow: 0 0 20px rgba(124,58,237,0.6); }
+  .server-icon.active { border-radius: 12px; background: linear-gradient(135deg, var(--primary), var(--primary-bright)); color: #fff;
+    box-shadow: 0 0 25px rgba(124,58,237,0.8); }
+  .server-icon.active::before { content: ''; position: absolute; left: -14px; top: 50%; transform: translateY(-50%);
+    width: 4px; height: 28px; background: #fff; border-radius: 2px; z-index: 5; }
+  .servers-divider { width: 32px; height: 2px; background: rgba(124,58,237,0.3); border-radius: 2px; margin: 4px 0; flex-shrink: 0; }
+  .server-icon.action { background: rgba(124,58,237,0.08); border: 1px dashed rgba(124,58,237,0.4); color: var(--primary-bright);
+    font-size: 20px; font-weight: 300; }
+  .server-icon.action:hover { background: linear-gradient(135deg, var(--primary), var(--primary-bright)); color: #fff; border-style: solid; }
+  .server-icon.action.green { background: rgba(34,197,94,0.08); border: 1px dashed rgba(34,197,94,0.4); color: var(--success); }
+  .server-icon.action.green:hover { background: linear-gradient(135deg, var(--success), #16a34a); color: #fff; }
+  .server-icon.dm-icon { background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; font-size: 22px; }
+  .server-icon.dm-icon::after { content: ''; position: absolute; top: -2px; right: -2px; width: 10px; height: 10px;
+    background: var(--success); border: 2px solid var(--darker); border-radius: 50%; }
+
+  .channels-bar { width: 240px; background: var(--panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
+  .server-header { height: 56px; padding: 0 18px; display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--border); background: linear-gradient(180deg, var(--panel), var(--panel-2));
+    cursor: pointer; transition: 0.2s; }
+  .server-header:hover { background: linear-gradient(180deg, rgba(124,58,237,0.1), rgba(124,58,237,0.05)); }
+  .server-name { font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 800; letter-spacing: 1.5px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .server-name span { color: var(--accent-bright); }
+  .channels-scroll { flex: 1; overflow-y: auto; padding: 15px 8px; }
+  .channels-scroll::-webkit-scrollbar { width: 6px; }
+  .channels-scroll::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.3); border-radius: 3px; }
+  .empty-state { padding: 30px 15px; text-align: center; color: var(--muted); font-size: 12px; letter-spacing: 1px; line-height: 1.6; }
+  .empty-state strong { display: block; font-family: 'Orbitron', sans-serif; font-size: 13px; color: var(--primary-bright); margin-bottom: 8px; letter-spacing: 2px; }
+  .cat-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 10px 8px;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--muted);
+    text-transform: uppercase; font-weight: 700; cursor: pointer; border-radius: 6px; transition: 0.2s; }
+  .cat-header:hover { color: var(--accent-bright); }
+  .cat-header .arrow { transition: 0.3s; font-size: 9px; }
+  .cat-header.closed .arrow { transform: rotate(-90deg); }
+  .channel { display: flex; align-items: center; gap: 10px; padding: 9px 12px; margin: 2px 0; border-radius: 6px;
+    cursor: pointer; font-size: 14px; font-weight: 500; color: #a8a8c0; transition: 0.2s; letter-spacing: 0.5px; }
+  .channel:hover { background: rgba(124,58,237,0.1); color: #fff; }
+  .channel.active { background: linear-gradient(90deg, rgba(124,58,237,0.25), rgba(124,58,237,0.05)); color: #fff;
+    box-shadow: inset 2px 0 0 var(--accent-bright); }
+  .channel-icon { font-size: 14px; color: var(--muted); flex-shrink: 0; font-family: 'JetBrains Mono', monospace; font-weight: 700; }
+  .channel.active .channel-icon { color: var(--accent-bright); }
+  .channel.voice .channel-icon { color: var(--primary-bright); }
+  .channel-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .friend-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; margin: 3px 0; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+  .friend-item:hover { background: rgba(124,58,237,0.1); }
+  .friend-item.active { background: linear-gradient(90deg, rgba(34,197,94,0.2), rgba(34,197,94,0.05)); box-shadow: inset 2px 0 0 var(--success); }
+  .friend-item-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-bright), var(--accent));
+    display: flex; align-items: center; justify-content: center; font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 900; color: #fff;
+    flex-shrink: 0; position: relative; overflow: hidden; }
+  .friend-item-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .friend-item-avatar::after { content: ''; position: absolute; bottom: -1px; right: -1px; width: 9px; height: 9px;
+    background: var(--success); border: 2px solid var(--panel); border-radius: 50%; z-index: 2; }
+  .friend-item-avatar.offline::after { background: #555; box-shadow: none; }
+  .friend-item-info { flex: 1; min-width: 0; }
+  .friend-item-name { font-size: 13px; font-weight: 600; color: #d0d0e8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .friend-item-status { font-size: 10px; color: var(--muted); font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; }
+  .friend-item-call { width: 26px; height: 26px; border-radius: 7px; background: rgba(34,197,94,0.1);
+    border: 1px solid rgba(34,197,94,0.3); display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: 0.2s; color: var(--success); opacity: 0; flex-shrink: 0; }
+  .friend-item:hover .friend-item-call { opacity: 1; }
+  .friend-item-call:hover { background: rgba(34,197,94,0.25); box-shadow: 0 0 15px rgba(34,197,94,0.5); transform: scale(1.1); }
+  .friend-item-call svg { width: 13px; height: 13px; fill: currentColor; }
+
+  .main { flex: 1; display: flex; flex-direction: column; background: var(--darker); position: relative; overflow: hidden; }
+  .main::before { content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 20% 30%, rgba(124,58,237,0.08), transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(6,182,212,0.06), transparent 50%); pointer-events: none; }
+  .chat-header { height: 56px; border-bottom: 1px solid var(--border); background: rgba(5,6,13,0.6); backdrop-filter: blur(10px);
+    display: flex; align-items: center; padding: 0 22px; gap: 12px; flex-shrink: 0; position: relative; z-index: 5; }
+  .chat-header .channel-icon { font-size: 18px; color: var(--primary-bright); }
+  .chat-header .channel-name-big { font-family: 'Orbitron', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 1.5px; }
+  .chat-header .channel-desc { color: var(--muted); font-size: 12px; padding-left: 12px; border-left: 1px solid var(--border);
+    margin-left: 12px; letter-spacing: 0.5px; }
+  .header-actions { margin-left: auto; display: flex; gap: 8px; }
+  .icon-btn { width: 36px; height: 36px; border-radius: 8px; background: rgba(124,58,237,0.08); border: 1px solid rgba(124,58,237,0.25);
+    display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; color: #a8a8c0; font-size: 16px; }
+  .icon-btn:hover { background: rgba(124,58,237,0.2); color: #fff; border-color: var(--primary-bright); }
+  .icon-btn svg { width: 16px; height: 16px; fill: currentColor; }
+  .icon-btn.call-friend { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3); color: var(--success); }
+  .icon-btn.call-friend:hover { background: rgba(34,197,94,0.25); box-shadow: 0 0 15px rgba(34,197,94,0.5); }
+  .icon-btn.invite-friend { background: rgba(6,182,212,0.1); border-color: rgba(6,182,212,0.3); color: var(--accent-bright); }
+  .icon-btn.invite-friend:hover { background: rgba(6,182,212,0.25); box-shadow: 0 0 15px rgba(6,182,212,0.5); }
+  .icon-btn.danger-btn { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); color: #ff5050; }
+  .icon-btn.danger-btn:hover { background: rgba(239,68,68,0.25); box-shadow: 0 0 15px rgba(239,68,68,0.5); }
+
+  .no-server { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px;
+    text-align: center; position: relative; z-index: 1; }
+  .no-server-icon { width: 90px; height: 90px; background: rgba(124,58,237,0.1); border: 1px dashed rgba(124,58,237,0.4);
+    border-radius: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 25px; font-size: 40px; }
+  .no-server h2 { font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: 800; letter-spacing: 2px; margin-bottom: 12px; color: #fff; }
+  .no-server p { color: var(--muted); font-size: 14px; letter-spacing: 0.5px; max-width: 400px; line-height: 1.6; margin-bottom: 30px; }
+  .btn-big { padding: 15px 36px; background: linear-gradient(135deg, var(--primary), var(--primary-bright)); border: none;
+    border-radius: 10px; color: #fff; font-family: 'Rajdhani', sans-serif; font-weight: 800; font-size: 14px;
+    letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: 0.3s; box-shadow: 0 0 25px rgba(124,58,237,0.5); }
+  .btn-big:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(124,58,237,0.8); }
+
+  .chat-area { flex: 1; overflow-y: auto; padding: 20px 0; position: relative; z-index: 1; }
+  .chat-area::-webkit-scrollbar { width: 8px; }
+  .chat-area::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.3); border-radius: 4px; }
+  .welcome-block { padding: 20px 30px 30px; border-bottom: 1px solid rgba(124,58,237,0.1); margin-bottom: 20px; }
+  .welcome-block h1 { font-family: 'Orbitron', sans-serif; font-size: 26px; font-weight: 900; letter-spacing: 2px; margin-bottom: 8px; color: #fff; }
+  .welcome-block h1 span { color: var(--accent-bright); }
+  .welcome-block p { color: var(--muted); font-size: 13px; letter-spacing: 0.5px; }
+  .msg { padding: 6px 30px; display: flex; gap: 14px; margin-bottom: 4px; transition: 0.2s; }
+  .msg:hover { background: rgba(124,58,237,0.04); }
+  .msg.me { background: rgba(124,58,237,0.06); }
+  .msg-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent));
+    display: flex; align-items: center; justify-content: center; font-family: 'Orbitron', sans-serif; font-size: 14px;
+    font-weight: 900; color: #fff; flex-shrink: 0; overflow: hidden; }
+  .msg-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .msg-body { flex: 1; min-width: 0; }
+  .msg-top { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+  .msg-name { font-weight: 700; font-size: 14px; color: var(--primary-bright); letter-spacing: 0.5px; }
+  .msg-time { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+  .msg-text { color: #d0d0e8; font-size: 14px; line-height: 1.5; word-wrap: break-word; }
+  .msg-text img { max-width: 320px; max-height: 320px; border-radius: 10px; margin-top: 6px;
+    border: 1px solid var(--border); display: block; cursor: pointer; transition: 0.2s; }
+  .msg-text img:hover { transform: scale(1.02); box-shadow: 0 0 25px rgba(124,58,237,0.5); }
+
+  .chat-input-wrap { padding: 12px 22px 22px; flex-shrink: 0; position: relative; z-index: 5; }
+  .chat-input { background: linear-gradient(180deg, var(--panel-2), var(--panel)); border: 1px solid rgba(124,58,237,0.3);
+    border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; transition: 0.3s; }
+  .chat-input:focus-within { border-color: var(--primary-bright); box-shadow: 0 0 25px rgba(124,58,237,0.3); }
+  .chat-input input[type="text"] { flex: 1; background: none; border: none; outline: none; color: #fff;
+    font-family: 'Rajdhani', sans-serif; font-size: 15px; letter-spacing: 0.5px; }
+  .chat-input input::placeholder { color: var(--muted); }
+  .attach-btn, .send-btn { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center;
+    justify-content: center; cursor: pointer; border: none; transition: 0.2s; font-size: 18px; flex-shrink: 0; }
+  .attach-btn { background: rgba(6,182,212,0.1); color: var(--accent-bright); border: 1px solid rgba(6,182,212,0.3); }
+  .attach-btn:hover { background: rgba(6,182,212,0.25); box-shadow: 0 0 15px rgba(6,182,212,0.5); }
+  .send-btn { background: linear-gradient(135deg, var(--primary), var(--primary-bright)); color: #fff; box-shadow: 0 0 15px rgba(124,58,237,0.5); }
+  .send-btn:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(124,58,237,0.8); }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(3,4,9,0.85); backdrop-filter: blur(10px);
+    display: none; align-items: center; justify-content: center; z-index: 500; padding: 20px; overflow-y: auto; }
+  .modal-overlay.active { display: flex; }
+  .modal-box { background: linear-gradient(160deg, var(--panel), var(--panel-2)); border: 1px solid rgba(124,58,237,0.4);
+    border-radius: 16px; max-width: 460px; width: 100%; padding: 30px; box-shadow: 0 0 60px rgba(124,58,237,0.4);
+    animation: modalIn 0.3s ease; position: relative; max-height: 90vh; overflow-y: auto; }
+  @keyframes modalIn { from { opacity: 0; transform: scale(0.92) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+  .modal-box h3 { font-family: 'Orbitron', sans-serif; font-size: 16px; font-weight: 800; letter-spacing: 2px; margin-bottom: 20px; color: #fff; }
+  .modal-box h3 span { color: var(--accent-bright); }
+  .field { margin-bottom: 15px; }
+  .field label { display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px;
+    color: var(--primary-bright); margin-bottom: 6px; text-transform: uppercase; font-weight: 700; }
+  .field input, .field select, .field textarea { width: 100%; padding: 11px 14px; background: rgba(124,58,237,0.05);
+    border: 1px solid rgba(124,58,237,0.3); border-radius: 8px; color: #fff; font-family: 'Rajdhani', sans-serif;
+    font-size: 14px; outline: none; transition: 0.2s; }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--primary-bright); box-shadow: 0 0 15px rgba(124,58,237,0.3); }
+  .field select option { background: var(--panel); }
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+  .btn-modal { flex: 1; padding: 12px; border-radius: 8px; border: none; cursor: pointer;
+    font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 1.5px;
+    text-transform: uppercase; transition: 0.2s; min-width: 100px; }
+  .btn-modal.primary { background: linear-gradient(135deg, var(--primary), var(--primary-bright)); color: #fff;
+    box-shadow: 0 0 20px rgba(124,58,237,0.5); }
+  .btn-modal.primary:hover { box-shadow: 0 0 30px rgba(124,58,237,0.8); transform: translateY(-2px); }
+  .btn-modal.ghost { background: rgba(124,58,237,0.1); color: #fff; border: 1px solid rgba(124,58,237,0.3); }
+  .btn-modal.ghost:hover { background: rgba(124,58,237,0.2); }
+  .btn-modal.danger { background: linear-gradient(135deg, var(--danger), #b91c1c); color: #fff;
+    box-shadow: 0 0 20px rgba(239,68,68,0.5); }
+  .btn-modal.danger:hover { box-shadow: 0 0 30px rgba(239,68,68,0.8); transform: translateY(-2px); }
+
+  .pick-list { max-height: 320px; overflow-y: auto; margin: 10px 0; padding-right: 5px; }
+  .pick-list::-webkit-scrollbar { width: 6px; }
+  .pick-list::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.3); border-radius: 3px; }
+  .pick-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px;
+    background: rgba(124,58,237,0.05); border: 1px solid rgba(124,58,237,0.15); margin-bottom: 8px;
+    cursor: pointer; transition: 0.2s; }
+  .pick-item:hover { background: rgba(124,58,237,0.15); border-color: var(--primary-bright); }
+  .pick-item.selected { background: rgba(34,197,94,0.15); border-color: var(--success); box-shadow: 0 0 15px rgba(34,197,94,0.3); }
+  .pick-item-check { width: 24px; height: 24px; border-radius: 6px; border: 2px solid rgba(124,58,237,0.4);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: 0.2s; }
+  .pick-item.selected .pick-item-check { background: var(--success); border-color: var(--success); }
+  .pick-item.selected .pick-item-check::after { content: '✓'; color: #fff; font-weight: 900; font-size: 14px; }
+  .pick-item-avatar { width: 36px; height: 36px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--primary-bright), var(--accent)); display: flex;
+    align-items: center; justify-content: center; font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 900; color: #fff; }
+  .pick-item-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .pick-item-info { flex: 1; min-width: 0; }
+  .pick-item-name { font-size: 14px; font-weight: 600; color: #fff; }
+  .pick-item-status { font-size: 10px; color: var(--muted); font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; }
+
+  .profile-photo-edit { width: 110px; height: 110px; margin: 0 auto 20px; border-radius: 50%; position: relative;
+    cursor: pointer; background: linear-gradient(135deg, var(--primary-bright), var(--accent)); overflow: hidden;
+    display: flex; align-items: center; justify-content: center; border: 3px solid rgba(124,58,237,0.5);
+    transition: 0.2s; }
+  .profile-photo-edit:hover { border-color: var(--primary-bright); box-shadow: 0 0 30px rgba(124,58,237,0.7); }
+  .profile-photo-edit img { width: 100%; height: 100%; object-fit: cover; }
+  .profile-photo-edit .inicial { font-family: 'Orbitron', sans-serif; font-size: 42px; font-weight: 900; color: #fff; }
+  .profile-photo-edit .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6);
+    display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px;
+    font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; font-weight: 700; opacity: 0; transition: 0.2s; text-align: center; padding: 10px; }
+  .profile-photo-edit:hover .overlay { opacity: 1; }
+
+  .config-tabs { display: flex; gap: 6px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+  .config-tab { padding: 10px 16px; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 13px;
+    letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); cursor: pointer; transition: 0.2s;
+    border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .config-tab:hover { color: #fff; }
+  .config-tab.active { color: var(--accent-bright); border-bottom-color: var(--accent-bright); }
+  .config-content { display: none; }
+  .config-content.active { display: block; }
+
+  .cargo-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px;
+    background: rgba(124,58,237,0.05); border: 1px solid rgba(124,58,237,0.2); margin-bottom: 8px;
+    transition: 0.2s; }
+  .cargo-item:hover { background: rgba(124,58,237,0.1); border-color: var(--primary-bright); }
+  .cargo-cor { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.2); }
+  .cargo-info { flex: 1; min-width: 0; }
+  .cargo-nome { font-size: 14px; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
+  .cargo-desc { font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.5px; }
+  .cargo-actions { display: flex; gap: 6px; }
+  .cargo-btn { width: 30px; height: 30px; border-radius: 8px; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: 0.2s; font-size: 14px; }
+  .cargo-btn.edit { background: rgba(6,182,212,0.15); color: var(--accent-bright); }
+  .cargo-btn.edit:hover { background: rgba(6,182,212,0.3); box-shadow: 0 0 10px rgba(6,182,212,0.5); }
+  .cargo-btn.del { background: rgba(239,68,68,0.15); color: #ff5050; }
+  .cargo-btn.del:hover { background: rgba(239,68,68,0.3); box-shadow: 0 0 10px rgba(239,68,68,0.5); }
+
+  .color-picker { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .color-option { width: 34px; height: 34px; border-radius: 50%; cursor: pointer; border: 3px solid transparent;
+    transition: 0.2s; position: relative; }
+  .color-option:hover { transform: scale(1.1); }
+  .color-option.selected { border-color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.5); transform: scale(1.05); }
+  .color-option.selected::after { content: '✓'; position: absolute; inset: 0; display: flex;
+    align-items: center; justify-content: center; color: #fff; font-weight: 900; font-size: 14px;
+    text-shadow: 0 0 4px rgba(0,0,0,0.8); }
+
+  .member-cargos { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 3px; }
+  .member-cargo-tag { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700;
+    padding: 2px 6px; border-radius: 4px; letter-spacing: 0.5px; color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.6); }
+
+  .voice-area { position: absolute; inset: 0; background: #000; z-index: 50; display: none; flex-direction: column; }
+  .voice-area.active { display: flex; }
+  .voice-header { height: 55px; background: rgba(5,6,13,0.95); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 20px; gap: 12px; flex-shrink: 0; flex-wrap: wrap; }
+  .voice-live-badge { display: flex; align-items: center; gap: 8px; padding: 5px 12px; background: rgba(239,68,68,0.15);
+    border: 1px solid rgba(239,68,68,0.4); border-radius: 100px; font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px; color: #ff5050; font-weight: 700; }
+  .voice-live-badge::before { content: ''; width: 7px; height: 7px; background: #ff5050; border-radius: 50%;
+    box-shadow: 0 0 8px #ff5050; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .voice-title { font-family: 'Orbitron', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 1.5px; }
+  .voice-actions { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+  .voice-btn { padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(124,58,237,0.4); background: rgba(124,58,237,0.15);
+    color: #fff; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 1.5px;
+    text-transform: uppercase; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+  .voice-btn:hover { background: rgba(124,58,237,0.3); border-color: var(--primary-bright); box-shadow: 0 0 15px rgba(124,58,237,0.5); }
+  .voice-btn svg { width: 14px; height: 14px; fill: currentColor; }
+  .voice-btn.danger { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4); color: #ff5050; }
+  .voice-btn.danger:hover { background: rgba(239,68,68,0.3); color: #fff; }
+  .voice-btn.ativo { background: linear-gradient(135deg, var(--primary), var(--primary-bright));
+    border-color: var(--primary-bright); box-shadow: 0 0 20px rgba(124,58,237,0.7); }
+  #jitsi-container { flex: 1; background: #000; }
+
+  .members-bar { width: 240px; background: var(--panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
+  .members-scroll { flex: 1; overflow-y: auto; padding: 15px 8px; }
+  .members-scroll::-webkit-scrollbar { width: 6px; }
+  .members-scroll::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.3); border-radius: 3px; }
+  .member { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; margin-bottom: 2px; }
+  .member:hover { background: rgba(124,58,237,0.12); }
+  .member-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-bright), var(--accent));
+    display: flex; align-items: center; justify-content: center; font-family: 'Orbitron', sans-serif; font-size: 12px;
+    font-weight: 900; color: #fff; position: relative; flex-shrink: 0; overflow: hidden; }
+  .member-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .member-avatar::after { content: ''; position: absolute; bottom: -2px; right: -2px; width: 12px; height: 12px;
+    background: var(--success); border: 2px solid var(--panel); border-radius: 50%; z-index: 2; }
+  .member-info { flex: 1; min-width: 0; }
+  .member-name { font-size: 13px; font-weight: 600; color: #d0d0e8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .member-status { font-size: 10px; color: var(--muted); font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; }
+  .member-call { width: 28px; height: 28px; border-radius: 8px; background: rgba(34,197,94,0.1);
+    border: 1px solid rgba(34,197,94,0.3); display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: 0.2s; color: var(--success); opacity: 0; }
+  .member:hover .member-call { opacity: 1; }
+  .member-call:hover { background: rgba(34,197,94,0.25); box-shadow: 0 0 15px rgba(34,197,94,0.5); transform: scale(1.1); }
+  .member-call svg { width: 14px; height: 14px; fill: currentColor; }
+
+  .call-modal { position: fixed; inset: 0; background: rgba(3,4,9,0.92); backdrop-filter: blur(15px);
+    display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
+  .call-modal.active { display: flex; }
+  .call-card { background: linear-gradient(160deg, var(--panel), var(--panel-2)); border: 2px solid rgba(34,197,94,0.5);
+    border-radius: 24px; padding: 45px 40px; max-width: 460px; width: 100%; text-align: center;
+    box-shadow: 0 0 100px rgba(34,197,94,0.6), 0 0 40px rgba(34,197,94,0.4); position: relative;
+    animation: callIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  @keyframes callIn { from { opacity: 0; transform: scale(0.85) translateY(30px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+  .call-avatar { width: 110px; height: 110px; margin: 0 auto 25px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--success), #16a34a); display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron', sans-serif; font-size: 44px; font-weight: 900; color: #fff;
+    box-shadow: 0 0 40px rgba(34,197,94,0.8); animation: ring 1.5s ease-in-out infinite; position: relative;
+    overflow: hidden; }
+  .call-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  @keyframes ring { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+  .call-avatar::after { content: ''; position: absolute; inset: -12px; border: 3px solid var(--success);
+    border-radius: 50%; animation: ripple 1.5s ease-out infinite; }
+  @keyframes ripple { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.4); opacity: 0; } }
+  .call-card h2 { font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: 900; letter-spacing: 2px;
+    margin-bottom: 8px; color: #fff; }
+  .call-card .call-tipo { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 3px;
+    color: var(--success); text-transform: uppercase; margin-bottom: 15px; font-weight: 700; }
+  .call-card .call-info { color: var(--muted); font-size: 14px; margin-bottom: 35px; line-height: 1.5; letter-spacing: 0.5px; }
+  .call-card .call-info b { color: #fff; font-weight: 700; }
+  .call-buttons { display: flex; gap: 15px; }
+  .call-action { flex: 1; padding: 18px; border-radius: 14px; border: none; cursor: pointer;
+    font-family: 'Rajdhani', sans-serif; font-weight: 800; font-size: 15px; letter-spacing: 2px;
+    text-transform: uppercase; transition: 0.3s; display: inline-flex; align-items: center;
+    justify-content: center; gap: 10px; }
+  .call-action svg { width: 20px; height: 20px; fill: currentColor; }
+  .call-action.accept { background: linear-gradient(135deg, var(--success), #16a34a); color: #fff;
+    box-shadow: 0 0 30px rgba(34,197,94,0.6); }
+  .call-action.accept:hover { transform: translateY(-3px); box-shadow: 0 15px 45px rgba(34,197,94,0.9); }
+  .call-action.reject { background: linear-gradient(135deg, var(--danger), #b91c1c); color: #fff;
+    box-shadow: 0 0 30px rgba(239,68,68,0.6); }
+  .call-action.reject:hover { transform: translateY(-3px); box-shadow: 0 15px 45px rgba(239,68,68,0.9); }
+
+  .toast-container { position: fixed; top: 80px; right: 20px; z-index: 9997; display: flex; flex-direction: column; gap: 10px; pointer-events: none; max-width: 360px; }
+  .toast { background: linear-gradient(160deg, var(--panel), var(--panel-2)); border: 1px solid rgba(124,58,237,0.5);
+    border-radius: 14px; padding: 16px 20px; box-shadow: 0 0 40px rgba(124,58,237,0.6);
+    animation: toastIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: auto; position: relative; overflow: hidden; }
+  .toast::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    background: linear-gradient(180deg, var(--primary-bright), var(--accent-bright)); }
+  @keyframes toastIn { from { opacity: 0; transform: translateX(400px); } to { opacity: 1; transform: translateX(0); } }
+  .toast h4 { font-family: 'Orbitron', sans-serif; font-size: 12px; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 4px; color: #fff; }
+  .toast p { color: var(--muted); font-size: 12px; letter-spacing: 0.5px; line-height: 1.4; }
+
+  /* ESCONDE QUALQUER COISA DO JITSI QUE APAREÇA FORA (anúncios/watermark) */
+  #jitsi-container iframe { border: none !important; }
+
+  @media (max-width: 900px) {
+    .servers-bar { width: 62px; } .server-icon { width: 42px; height: 42px; font-size: 11px; }
+    .channels-bar { width: 180px; } .members-bar { display: none; } .my-id-box .id-val { display: none; }
+  }
+  @media (max-width: 600px) {
+    .channels-bar { position: absolute; left: 62px; top: 60px; bottom: 0; z-index: 40; transform: translateX(-100%); transition: 0.3s; }
+    .channels-bar.open { transform: translateX(0); }
+    .msg { padding: 6px 16px; } .chat-input-wrap { padding: 10px 12px 14px; } .channel-desc { display: none; }
+  }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: linear-gradient(var(--primary), var(--primary-bright)); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- MODAL DE CHAMADA -->
+<div class="call-modal" id="callModal">
+  <div class="call-card">
+    <div class="call-avatar" id="callAvatar">?</div>
+    <div class="call-tipo" id="callTipo">CHAMADA PRIVADA</div>
+    <h2 id="callNome">Alguém</h2>
+    <div class="call-info" id="callInfo">está te chamando</div>
+    <div class="call-buttons">
+      <button class="call-action reject" onclick="recusarChamadaUI()">
+        <svg viewBox="0 0 24 24"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg>
+        Recusar
+      </button>
+      <button class="call-action accept" onclick="aceitarChamadaUI()">
+        <svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
+        Aceitar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE PEDIDO DE AMIZADE -->
+<div class="call-modal" id="friendModal">
+  <div class="call-card" style="border-color: rgba(124,58,237,0.5); box-shadow: 0 0 100px rgba(124,58,237,0.6);">
+    <div class="call-avatar" id="friendAvatar" style="background: linear-gradient(135deg, var(--primary-bright), var(--accent)); box-shadow: 0 0 40px rgba(168,85,247,0.8);">?</div>
+    <div class="call-tipo" style="color: var(--primary-bright);">PEDIDO DE AMIZADE</div>
+    <h2 id="friendNome">Alguém</h2>
+    <div class="call-info" id="friendInfo">quer ser seu amigo</div>
+    <div class="call-buttons">
+      <button class="call-action reject" onclick="recusarAmizadeUI()">
+        <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        Recusar
+      </button>
+      <button class="call-action accept" onclick="aceitarAmizadeUI()">
+        <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+        Aceitar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <h1>BRIS<span>CORD</span></h1>
+    <p id="loginSub">Crie sua conta</p>
+
+    <div class="avatar-upload" onclick="document.getElementById('loginAvatarInput').click()">
+      <div class="initials" id="loginAvatarInitial">?</div>
+      <img id="loginAvatarImg" style="display:none;">
+      <div class="edit-badge">📷 FOTO</div>
+    </div>
+    <input type="file" id="loginAvatarInput" accept="image/*" style="display:none" onchange="uploadLoginAvatar(event)">
+
+    <div class="login-field">
+      <label>Seu nome</label>
+      <input type="text" id="loginNome" placeholder="Ex: João" maxlength="20">
+    </div>
+    <button class="login-btn" onclick="entrar()">ENTRAR →</button>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <div class="brand-text">BRIS<span>CORD</span></div>
+  </div>
+  <div class="topbar-spacer"></div>
+  <div class="my-id-box" onclick="copiarMeuID()" title="Clique para copiar seu ID">
+    <label>SEU ID</label>
+    <div class="id-val" id="myIdVal">...</div>
+  </div>
+  <div class="user-info" onclick="abrirModalPerfil()" title="Editar perfil">
+    <div class="user-avatar" id="userAvatar">?</div>
+    <div class="user-name" id="userName">...</div>
+    <div class="status-dot" id="statusDot"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app">
+  <div class="servers-bar" id="serversBar">
+    <div class="server-icon dm-icon" id="dmBtn" onclick="abrirAmigos()" title="Amigos">💬</div>
+    <div class="servers-divider"></div>
+    <div class="server-icon action green" onclick="abrirModalAmigo()" title="Adicionar Amigo">👤</div>
+    <div class="servers-divider"></div>
+    <div id="serversList" style="display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;"></div>
+    <div class="servers-divider"></div>
+    <div class="server-icon action" onclick="abrirModalServidor()" title="Criar Servidor">+</div>
+  </div>
+
+  <div class="channels-bar">
+    <div class="server-header" id="serverHeader" onclick="abrirConfigServidor()" title="Configurações do servidor">
+      <div class="server-name" id="serverName">SEM SERVIDOR</div>
+      <span style="color:var(--muted);font-size:12px;">⚙️</span>
+    </div>
+    <div class="channels-scroll" id="channelsScroll">
+      <div class="empty-state"><strong>NENHUM SERVIDOR</strong>Clique no <b>+</b> para criar seu primeiro servidor.</div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="no-server" id="noServer">
+      <div class="no-server-icon">🖥️</div>
+      <h2>NENHUM SERVIDOR SELECIONADO</h2>
+      <p>Crie seu próprio servidor ou clique no <b style="color:#22c55e">💬</b> na barra lateral para abrir suas mensagens diretas.</p>
+      <button class="btn-big" onclick="abrirModalServidor()">➕ CRIAR SERVIDOR</button>
+    </div>
+
+    <div class="chat-header" id="chatHeader" style="display:none;">
+      <span class="channel-icon" id="headerIcon">#</span>
+      <span class="channel-name-big" id="headerName">geral</span>
+      <span class="channel-desc" id="headerDesc">Chat geral</span>
+      <div class="header-actions" id="headerActions"></div>
+    </div>
+
+    <div class="chat-area" id="chatArea" style="display:none;"></div>
+
+    <div class="chat-input-wrap" id="chatInputWrap" style="display:none;">
+      <div class="chat-input">
+        <button class="attach-btn" onclick="document.getElementById('fileInput').click()" title="Enviar imagem">📎</button>
+        <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="enviarImagem(event)">
+        <input type="text" id="msgInput" placeholder="Digite uma mensagem..." onkeydown="if(event.key==='Enter') enviarMensagem()">
+        <button class="send-btn" onclick="enviarMensagem()" title="Enviar">
+          <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ÁREA DE VOZ — se o Jitsi tentar abrir tela extra, bloqueamos -->
+    <div class="voice-area" id="voiceArea">
+      <div class="voice-header">
+        <div class="voice-live-badge">AO VIVO</div>
+        <div class="voice-title" id="voiceTitle">Sala de Voz</div>
+        <div class="voice-actions">
+          <button class="voice-btn" id="btnMic" onclick="toggleMic()">🎤 MIC</button>
+          <button class="voice-btn" id="btnCam" onclick="toggleCam()">📷 CAM</button>
+          <button class="voice-btn" id="btnShare" onclick="toggleShare()">🖥️ TELA</button>
+          <button class="voice-btn danger" onclick="sairDaCall()">✕ SAIR</button>
+        </div>
+      </div>
+      <div id="jitsi-container"></div>
+    </div>
+  </div>
+
+  <div class="members-bar" id="membersBar" style="display:none;">
+    <div class="server-header" style="justify-content:flex-start;cursor:default;">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);font-weight:700;">MEMBROS — <span id="membersCount" style="color:var(--accent-bright);">1</span></span>
+    </div>
+    <div class="members-scroll" id="membersScroll"></div>
+  </div>
+</div>
+
+<!-- MODAL AMIGO -->
+<div class="modal-overlay" id="modalAmigo">
+  <div class="modal-box">
+    <h3>ADICIONAR <span>AMIGO</span></h3>
+    <p style="color:var(--muted);font-size:12px;margin-bottom:16px;line-height:1.6;">
+      Digite o <b style="color:#22c55e">ID</b> do seu amigo. Ele vai receber um pedido e só precisa aceitar.
+    </p>
+    <div class="field"><label>Nome do Amigo</label><input type="text" id="novoAmigoNome" placeholder="Ex: Pedro" maxlength="20"></div>
+    <div class="field"><label>ID do Amigo</label><input type="text" id="novoAmigoId" placeholder="Ex: bris-abc123" maxlength="40"></div>
+    <div class="modal-actions">
+      <button class="btn-modal ghost" onclick="fecharModal('modalAmigo')">Cancelar</button>
+      <button class="btn-modal primary" onclick="enviarPedidoAmizade()">Enviar Pedido</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CRIAR SERVIDOR -->
+<div class="modal-overlay" id="modalServidor">
+  <div class="modal-box">
+    <h3>CRIAR <span>SERVIDOR</span></h3>
+    <div class="field"><label>Nome do Servidor</label><input type="text" id="novoServidorNome" placeholder="Ex: Meu RP" maxlength="20"></div>
+    <div class="field"><label>Sigla (até 2 letras)</label><input type="text" id="novoServidorSigla" placeholder="Ex: MS" maxlength="2" style="text-transform:uppercase"></div>
+    <div class="modal-actions">
+      <button class="btn-modal ghost" onclick="fecharModal('modalServidor')">Cancelar</button>
+      <button class="btn-modal primary" onclick="criarServidor()">Criar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIG SERVIDOR -->
+<div class="modal-overlay" id="modalConfigServidor">
+  <div class="modal-box" style="max-width: 540px;">
+    <h3>CONFIGURAÇÕES <span>DO SERVIDOR</span></h3>
+    <div class="config-tabs">
+      <div class="config-tab active" onclick="mudarAba('aba-geral', this)">Geral</div>
+      <div class="config-tab" onclick="mudarAba('aba-cargos', this)">Cargos</div>
+    </div>
+    <div class="config-content active" id="aba-geral">
+      <div class="field"><label>Nome do Servidor</label><input type="text" id="editServidorNome" maxlength="20"></div>
+      <div class="field"><label>Sigla (até 2 letras)</label><input type="text" id="editServidorSigla" maxlength="2" style="text-transform:uppercase"></div>
+      <div class="modal-actions">
+        <button class="btn-modal ghost" onclick="fecharModal('modalConfigServidor')">Fechar</button>
+        <button class="btn-modal primary" onclick="salvarEdicaoServidor()">Salvar</button>
+        <button class="btn-modal danger" onclick="excluirServidor()">🗑️ Excluir</button>
+      </div>
+    </div>
+    <div class="config-content" id="aba-cargos">
+      <p style="color:var(--muted);font-size:12px;margin-bottom:14px;line-height:1.6;">
+        Crie cargos com cores para marcar os membros do servidor.
+      </p>
+      <div id="listaCargos"></div>
+      <button class="btn-modal primary" style="width:100%;margin-top:10px;" onclick="abrirModalCriarCargo()">➕ Criar Cargo</button>
+      <div class="modal-actions">
+        <button class="btn-modal ghost" onclick="fecharModal('modalConfigServidor')">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CRIAR/EDITAR CARGO -->
+<div class="modal-overlay" id="modalCargo">
+  <div class="modal-box">
+    <h3 id="cargoModalTitulo">CRIAR <span>CARGO</span></h3>
+    <div class="field"><label>Nome do Cargo</label><input type="text" id="cargoNome" placeholder="Ex: Admin" maxlength="20"></div>
+    <div class="field">
+      <label>Cor do Cargo</label>
+      <div class="color-picker" id="colorPicker"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal ghost" onclick="fecharModal('modalCargo')">Cancelar</button>
+      <button class="btn-modal primary" onclick="salvarCargo()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ATRIBUIR CARGOS -->
+<div class="modal-overlay" id="modalAtribuirCargo">
+  <div class="modal-box">
+    <h3>ATRIBUIR <span>CARGOS</span></h3>
+    <p style="color:var(--muted);font-size:12px;margin-bottom:14px;line-height:1.6;">
+      Membro: <b style="color:#fff" id="atribuirMembroNome">-</b>
+    </p>
+    <div id="listaCargosAtribuir"></div>
+    <div class="modal-actions">
+      <button class="btn-modal ghost" onclick="fecharModal('modalAtribuirCargo')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CANAL -->
+<div class="modal-overlay" id="modalCanal">
+  <div class="modal-box">
+    <h3>CRIAR <span>CANAL</span></h3>
+    <div class="field">
+      <label>Tipo</label>
+      <select id="novoCanalTipo">
+        <option value="text">📝 Texto (Chat)</option>
+        <option value="voice">🔊 Voz / Vídeo</option>
+      </select>
+    </div>
+    <div class="field"><label>Nome do Canal</label><input type="text" id="novoCanalNome" placeholder="Ex: geral" maxlength="25"></div>
+    <div class="field"><label>Categoria</label><select id="novoCanalCategoria"></select></div>
+    <div class="modal-actions">
+      <button class="btn-modal ghost" onclick="fecharModal('modalCanal')">Cancelar</button>
+      <button class="btn-modal primary" onclick="criarCanal()">Criar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CATEGORIA -->
+<div class="modal-overlay" id="modalCategoria">
+  <div class="modal-box">
+    <h3>CRIAR <span>CATEGORIA</span></h3>
+    <div class="field"><label>Nome da Categoria</label><input type="text" id="novaCategoriaNome" placeholder="Ex: Canais de Voz" maxlength="25"></div>
+    <div class="modal-actions">
+      <button class="btn-modal ghost" onclick="fecharModal('modalCategoria')">Cancelar</button>
+      <button class="btn-modal primary" onclick="criarCategoria()">Criar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ESCOLHER AMIGOS -->
+<div class="modal-overlay" id="modalEscolherChamar">
+  <div class="modal-box">
+    <h3>CHAMAR PARA <span>A CALL</span></h3>
+    <p style="color:var(--muted);font-size:12px;margin-bottom:16px;line-height:1.6;">
+      Selecione quem você quer chamar para a call do servidor.
+    </p>
+    <div class="pick-list" id="pickListChamar"></div>
+    <div class="modal-actions">
+      <button class="btn-modal ghost" onclick="fecharModal('modalEscolherChamar')">Cancelar</button>
+      <button class="btn-modal primary" onclick="confirmarChamarEscolhidos()">Chamar Selecionados</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PERFIL -->
+<div class="modal-overlay" id="modalPerfil">
+  <div class="modal-box">
+    <h3>EDITAR <span>PERFIL</span></h3>
+    <div class="profile-photo-edit" onclick="document.getElementById('perfilAvatarInput').click()">
+      <div class="inicial" id="perfilAvatarInicial">?</div>
+      <img id="perfilAvatarImg" style="display:none;">
+      <div class="overlay">📷<br>TROCAR FOTO</div>
+    </div>
+    <input type="file" id="perfilAvatarInput" accept="image/*" style="display:none" onchange="uploadPerfilAvatar(event)">
+    <div class="field"><label>Nome</label><input type="text" id="perfilNome" placeholder="Seu nome" maxlength="20"></div>
+    <div class="field"><label>Seu ID</label><input type="text" id="perfilId" readonly style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;"></div>
+    <div class="modal-actions">
+      <button class="btn-modal ghost" onclick="fecharModal('modalPerfil')">Fechar</button>
+      <button class="btn-modal primary" onclick="salvarPerfil()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://meet.jit.si/external_api.js"></script>
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<script>
+/* ==================================================
+   ESTADO
+================================================== */
+const STORAGE_KEY = 'briscord_user_v1';
+
+const CORES_CARGOS = [
+  '#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4',
+  '#3b82f6', '#8b5cf6', '#ec4899', '#a855f7', '#64748b'
+];
+
+const state = {
+  servidores: [], servidorAtivo: null, canalAtivo: null,
+  modo: 'servidor', amigoAtivo: null, amigos: [],
+  pedidosEnviados: [], pedidosRecebidos: [],
+  user: { nome: '', sigla: '?', id: '', avatar: null },
+  jitsiApi: null, micOn: false, camOn: false, sharing: false,
+  mensagens: {}, peer: null, conexoes: {}, meuPeerId: '',
+  chamadaPendente: null, amizadePendente: null,
+  escolhidosChamar: new Set(),
+  editandoCargoId: null, corSelecionadaCargo: CORES_CARGOS[0],
+  atribuirParaPeerId: null,
+  ligacaoPendente: null
+};
+
+/* ==================================================
+   PERSISTÊNCIA
+================================================== */
+function salvarEstado() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      user: state.user, servidores: state.servidores,
+      servidorAtivo: state.servidorAtivo, canalAtivo: state.canalAtivo,
+      amigos: state.amigos, mensagens: state.mensagens,
+      modo: state.modo, amigoAtivo: state.amigoAtivo
+    }));
+  } catch(e) { console.error(e); }
+}
+
+function carregarEstado() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    const dados = JSON.parse(raw);
+    if (!dados || !dados.user || !dados.user.nome) return false;
+    Object.assign(state, {
+      user: dados.user, servidores: dados.servidores || [],
+      servidorAtivo: dados.servidorAtivo || null, canalAtivo: dados.canalAtivo || null,
+      amigos: dados.amigos || [], mensagens: dados.mensagens || {},
+      modo: dados.modo || 'servidor', amigoAtivo: dados.amigoAtivo || null
+    });
+    return true;
+  } catch(e) { return false; }
+}
+
+/* ==================================================
+   KEEP-ALIVE
+================================================== */
+let audioKeepAlive = null;
+
+function ativarKeepAlive() {
+  if (audioKeepAlive) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value = 1;
+    gain.gain.value = 0.0001;
+    osc.start();
+    audioKeepAlive = { ctx, osc, gain };
+    console.log('[KEEPALIVE] Ativo');
+  } catch(e) { console.warn('[KEEPALIVE] Falhou:', e); }
+
+  if ('wakeLock' in navigator) {
+    navigator.wakeLock.request('screen').catch(() => {});
+  }
+}
+
+function desativarKeepAlive() {
+  if (!audioKeepAlive) return;
+  try { audioKeepAlive.osc.stop(); audioKeepAlive.ctx.close(); } catch(e) {}
+  audioKeepAlive = null;
+}
+
+/* ==================================================
+   HEARTBEAT PEER
+================================================== */
+let peerHeartbeat = null;
+
+function iniciarPeerHeartbeat() {
+  if (peerHeartbeat) clearInterval(peerHeartbeat);
+  peerHeartbeat = setInterval(() => {
+    Object.keys(state.conexoes).forEach(pid => {
+      const conn = state.conexoes[pid];
+      if (conn && conn.open) {
+        try { conn.send({ tipo: 'ping', autor: { nome: state.user.nome, id: state.user.id } }); } catch(e) {}
+      } else { conectarAmigo(pid); }
+    });
+  }, 10000);
+}
+
+/* ==================================================
+   LOGIN
+================================================== */
+let loginAvatarData = null;
+
+function uploadLoginAvatar(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    loginAvatarData = e.target.result;
+    document.getElementById('loginAvatarImg').src = loginAvatarData;
+    document.getElementById('loginAvatarImg').style.display = 'block';
+    document.getElementById('loginAvatarInitial').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+document.getElementById('loginNome').addEventListener('input', e => {
+  const v = e.target.value.trim();
+  if (v && !loginAvatarData) {
+    document.getElementById('loginAvatarInitial').textContent = v.charAt(0).toUpperCase();
+  }
+});
+document.getElementById('loginNome').addEventListener('keydown', e => { if (e.key === 'Enter') entrar(); });
+
+function entrar() {
+  const nome = document.getElementById('loginNome').value.trim();
+  if (!nome) {
+    document.getElementById('loginNome').style.borderColor = '#ef4444';
+    document.getElementById('loginNome').placeholder = 'Digite seu nome!';
+    return;
+  }
+  state.user.nome = nome;
+  state.user.sigla = nome.charAt(0).toUpperCase();
+  state.user.avatar = loginAvatarData;
+  if (!state.user.id) state.user.id = 'bris-' + Math.random().toString(36).slice(2, 8);
+  salvarEstado();
+  iniciarApp();
+}
+
+function iniciarApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  atualizarUIUsuario();
+  renderServidores();
+  if (state.servidorAtivo) selecionarServidor(state.servidorAtivo);
+  else if (state.modo === 'dm' && state.amigoAtivo) {
+    abrirAmigos();
+    if (state.amigoAtivo) abrirConversaAmigo(state.amigoAtivo);
+  }
+  iniciarPeer();
+}
+
+function atualizarUIUsuario() {
+  document.getElementById('userName').textContent = state.user.nome;
+  document.getElementById('myIdVal').textContent = state.user.id;
+  const avatarEl = document.getElementById('userAvatar');
+  if (state.user.avatar) avatarEl.innerHTML = `<img src="${state.user.avatar}">`;
+  else avatarEl.textContent = state.user.sigla;
+}
+
+/* ==================================================
+   PEERJS
+================================================== */
+function iniciarPeer() {
+  state.peer = new Peer(state.user.id, { debug: 1 });
+  state.peer.on('open', id => {
+    state.meuPeerId = id;
+    console.log('[PEER] Conectado:', id);
+    setStatus(true);
+    state.amigos.forEach(a => { if (a.peerId) conectarAmigo(a.peerId); });
+    iniciarPeerHeartbeat();
+  });
+  state.peer.on('error', err => {
+    console.error('[PEER] Erro:', err);
+    if (err.type === 'unavailable-id') {
+      state.user.id = 'bris-' + Math.random().toString(36).slice(2, 8);
+      document.getElementById('myIdVal').textContent = state.user.id;
+      salvarEstado();
+      setTimeout(() => iniciarPeer(), 500);
+    } else setStatus(false);
+  });
+  state.peer.on('connection', conn => { registrarConexao(conn); });
+  state.peer.on('disconnected', () => setStatus(false));
+  state.peer.on('close', () => setStatus(false));
+}
+
+function setStatus(online) {
+  const dot = document.getElementById('statusDot');
+  dot.style.background = online ? '#22c55e' : '#ef4444';
+  dot.style.boxShadow = `0 0 8px ${online ? '#22c55e' : '#ef4444'}`;
+}
+
+function registrarConexao(conn) {
+  state.conexoes[conn.peer] = conn;
+  conn.on('open', () => {
+    conn.send({ tipo: 'ola', autor: { nome: state.user.nome, id: state.user.id, avatar: state.user.avatar } });
+  });
+  conn.on('data', data => { processarMensagemRecebida(conn.peer, data); });
+  conn.on('close', () => {
+    delete state.conexoes[conn.peer];
+    renderAmigosSidebar();
+    renderMembros();
+  });
+  conn.on('error', err => console.error('[PEER] Erro conn:', err));
+}
+
+function conectarAmigo(peerId) {
+  if (!state.peer || !peerId) return;
+  if (state.conexoes[peerId]) return;
+  if (peerId === state.meuPeerId) return;
+  const conn = state.peer.connect(peerId, { reliable: true });
+  registrarConexao(conn);
+}
+
+function enviarParaPeer(peerId, payload) {
+  const conn = state.conexoes[peerId];
+  if (conn && conn.open) { conn.send(payload); return true; }
+  return false;
+}
+
+function enviarParaTodos(payload) {
+  let n = 0;
+  Object.keys(state.conexoes).forEach(pid => { if (enviarParaPeer(pid, payload)) n++; });
+  return n;
+}
+
+/* ==================================================
+   PROCESSAR MENSAGENS
+================================================== */
+function processarMensagemRecebida(deId, data) {
+  if (!data || !data.tipo) return;
+  switch (data.tipo) {
+    case 'ping': break; // heartbeat
+    case 'ola':
+      const amigo = state.amigos.find(a => a.peerId === deId);
+      if (amigo) {
+        if (data.autor.nome) amigo.nome = data.autor.nome;
+        if (data.autor.avatar) amigo.avatar = data.autor.avatar;
+        amigo.sigla = amigo.nome.charAt(0).toUpperCase();
+        renderAmigosSidebar();
+        renderMembros();
+        salvarEstado();
+      }
+      break;
+    case 'chat': receberChat(deId, data); break;
+    case 'call': receberChamada(deId, data); break;
+    case 'call-accept': receberAceiteChamada(deId, data); break;
+    case 'call-reject': receberRejeiteChamada(deId, data); break;
+    case 'convite': receberConvite(deId, data); break;
+    case 'amizade-pedido': receberPedidoAmizade(deId, data); break;
+    case 'amizade-aceita': receberAceiteAmizade(deId, data); break;
+    case 'amizade-recusada': receberRejeiteAmizade(deId, data); break;
+    case 'servidor-update': receberServidorUpdate(deId, data); break;
+    case 'servidor-delete': receberServidorDelete(deId, data); break;
+    case 'cargo-update': receberCargoUpdate(deId, data); break;
+  }
+}
+
+/* ==================================================
+   SERVIDOR
+================================================== */
+function receberServidorUpdate(deId, data) {
+  const { servidor } = data;
+  if (!servidor) return;
+  const idx = state.servidores.findIndex(s => s.id === servidor.id);
+  if (idx >= 0) state.servidores[idx] = servidor;
+  else state.servidores.push(servidor);
+  salvarEstado();
+  renderServidores();
+  if (state.servidorAtivo === servidor.id) renderCanais();
+  toast('🔄 Servidor atualizado', 'Canais sincronizados');
+}
+
+function enviarServidorUpdate() {
+  const srv = state.servidores.find(s => s.id === state.servidorAtivo);
+  if (!srv) return;
+  enviarParaTodos({
+    tipo: 'servidor-update',
+    autor: { nome: state.user.nome, id: state.user.id },
+    servidor: srv
+  });
+}
+
+function receberServidorDelete(deId, data) {
+  const { servidorId } = data;
+  state.servidores = state.servidores.filter(s => s.id !== servidorId);
+  if (state.servidorAtivo === servidorId) state.servidorAtivo = null;
+  salvarEstado();
+  renderServidores();
+  toast('🗑️ Servidor excluído', 'O dono removeu o servidor');
+}
+
+function receberCargoUpdate(deId, data) {
+  const { servidorId, cargos } = data;
+  const srv = state.servidores.find(s => s.id === servidorId);
+  if (!srv) return;
+  srv.cargos = cargos;
+  salvarEstado();
+  renderMembros();
+}
+
+/* ==================================================
+   CHAT
+================================================== */
+function receberChat(deId, data) {
+  const { autor, texto, imagem, canalId, amigoDe } = data;
+  if (amigoDe === state.meuPeerId) {
+    const amigo = state.amigos.find(a => a.peerId === deId);
+    const key = amigo ? 'dm-' + amigo.id : 'dm-' + deId;
+    if (!state.mensagens[key]) state.mensagens[key] = [];
+    state.mensagens[key].push({ autor, texto, imagem, hora: horaAtual(), de: false });
+    salvarEstado();
+    if (state.modo === 'dm' && amigo && state.amigoAtivo === amigo.id) adicionarBalao(autor, texto, imagem, false);
+    else toast('💬 ' + autor, texto || '[imagem]');
+    return;
+  }
+  const key = 'ch-' + canalId;
+  if (!state.mensagens[key]) state.mensagens[key] = [];
+  state.mensagens[key].push({ autor, texto, imagem, hora: horaAtual(), de: false });
+  salvarEstado();
+  if (state.modo === 'servidor' && state.canalAtivo === canalId) adicionarBalao(autor, texto, imagem, false);
+}
+
+/* ==================================================
+   CHAMADA
+================================================== */
+function receberChamada(deId, data) {
+  const { autor, salaId, tipo } = data;
+  state.chamadaPendente = { deId, autor, salaId, tipo };
+  const avatarEl = document.getElementById('callAvatar');
+  if (autor.avatar) avatarEl.innerHTML = `<img src="${autor.avatar}">`;
+  else avatarEl.innerHTML = autor.nome.charAt(0).toUpperCase();
+  document.getElementById('callNome').textContent = autor.nome;
+  document.getElementById('callTipo').textContent = tipo === 'privado' ? 'CHAMADA PRIVADA' : 'CHAMADA EM GRUPO';
+  document.getElementById('callInfo').innerHTML = `está te chamando para uma <b>chamada de vídeo</b>`;
+  document.getElementById('callModal').classList.add('active');
+  tocarSomChamadaLoop();
+}
+
+let somLoop = null;
+function tocarSomChamadaLoop() { pararSomChamadaLoop(); tocarSomChamada(); somLoop = setInterval(() => tocarSomChamada(), 2500); }
+function pararSomChamadaLoop() { if (somLoop) { clearInterval(somLoop); somLoop = null; } }
+function tocarSomChamada() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.35].forEach(delay => {
+      const osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = 800; osc.type = 'sine';
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime + delay);
+      gain.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + delay + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + delay + 0.3);
+      osc.start(ctx.currentTime + delay); osc.stop(ctx.currentTime + delay + 0.35);
+    });
+  } catch(e) {}
+}
+
+function aceitarChamadaUI() {
+  const c = state.chamadaPendente;
+  if (!c) return;
+  pararSomChamadaLoop();
+  document.getElementById('callModal').classList.remove('active');
+  enviarParaPeer(c.deId, { tipo: 'call-accept', autor: { nome: state.user.nome, id: state.user.id } });
+  const titulo = c.tipo === 'privado' ? '📞 Privado: ' + c.autor.nome : '📢 Grupo: ' + c.autor.nome;
+  document.getElementById('voiceTitle').textContent = titulo;
+  abrirJitsi(c.salaId);
+  state.chamadaPendente = null;
+}
+
+function recusarChamadaUI() {
+  const c = state.chamadaPendente;
+  if (!c) return;
+  pararSomChamadaLoop();
+  document.getElementById('callModal').classList.remove('active');
+  enviarParaPeer(c.deId, { tipo: 'call-reject', autor: { nome: state.user.nome, id: state.user.id } });
+  state.chamadaPendente = null;
+}
+
+function receberAceiteChamada(deId, data) {
+  toast('✅ Chamada aceita', data.autor.nome + ' entrou na call!');
+  if (state.ligacaoPendente) {
+    const { salaId, amigoNome } = state.ligacaoPendente;
+    document.getElementById('voiceTitle').textContent = '📞 Privado: ' + amigoNome;
+    abrirJitsi(salaId);
+    state.ligacaoPendente = null;
+  }
+}
+function receberRejeiteChamada(deId, data) { toast('❌ Chamada recusada', data.autor.nome + ' recusou.'); }
+
+/* ==================================================
+   LIGAR
+================================================== */
+function ligarPrivado(nomeAmigo) {
+  const amigo = state.amigos.find(a => a.nome === nomeAmigo);
+  if (!amigo) { alert('Amigo não encontrado.'); return; }
+  if (!amigo.peerId) { alert('Falta o ID do amigo.'); return; }
+  if (!state.conexoes[amigo.peerId]) {
+    conectarAmigo(amigo.peerId);
+    setTimeout(() => ligarDeVerdade(amigo), 1500);
+  } else ligarDeVerdade(amigo);
+}
+
+function ligarDeVerdade(amigo) {
+  const salaId = 'BRIS-' + [state.user.id, amigo.peerId].sort().join('-');
+  const enviado = enviarParaPeer(amigo.peerId, {
+    tipo: 'call', salaId, tipo: 'privado',
+    autor: { nome: state.user.nome, id: state.user.id, avatar: state.user.avatar }
+  });
+  if (!enviado) { toast('⚠️ Não foi possível ligar', 'Amigo offline'); return; }
+  toast('📞 Chamando...', 'Aguardando ' + amigo.nome + ' atender');
+  state.ligacaoPendente = { salaId, amigoNome: amigo.nome };
+}
+
+function chamarSala() {
+  const srv = state.servidores.find(s => s.id === state.servidorAtivo);
+  if (!srv) return;
+  state.escolhidosChamar = new Set();
+  const list = document.getElementById('pickListChamar');
+  list.innerHTML = '';
+  const amigosConectados = state.amigos.filter(a => a.peerId && state.conexoes[a.peerId]);
+  if (amigosConectados.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">Nenhum amigo online.</div>`;
+  } else {
+    amigosConectados.forEach(a => {
+      const item = document.createElement('div');
+      item.className = 'pick-item';
+      item.innerHTML = `
+        <div class="pick-item-check"></div>
+        <div class="pick-item-avatar">${a.avatar ? `<img src="${a.avatar}">` : a.sigla}</div>
+        <div class="pick-item-info">
+          <div class="pick-item-name">${a.nome}</div>
+          <div class="pick-item-status">🟢 Online</div>
+        </div>
+      `;
+      item.onclick = () => {
+        if (state.escolhidosChamar.has(a.peerId)) {
+          state.escolhidosChamar.delete(a.peerId);
+          item.classList.remove('selected');
+        } else {
+          state.escolhidosChamar.add(a.peerId);
+          item.classList.add('selected');
+        }
+      };
+      list.appendChild(item);
+    });
+  }
+  document.getElementById('modalEscolherChamar').classList.add('active');
+}
+
+function confirmarChamarEscolhidos() {
+  const srv = state.servidores.find(s => s.id === state.servidorAtivo);
+  if (!srv) return;
+  if (state.escolhidosChamar.size === 0) { alert('Selecione pelo menos um amigo!'); return; }
+  const salaId = 'BRISRV-' + srv.id;
+  state.escolhidosChamar.forEach(peerId => {
+    enviarParaPeer(peerId, {
+      tipo: 'call', salaId, tipo: 'grupo',
+      autor: { nome: state.user.nome, id: state.user.id, avatar: state.user.avatar }
+    });
+  });
+  toast('📢 Chamando ' + state.escolhidosChamar.size + ' amigo(s)', 'Aguardando aceitarem');
+  fecharModal('modalEscolherChamar');
+  document.getElementById('voiceTitle').textContent = '📢 Chamada: ' + srv.nome;
+  abrirJitsi(salaId);
+}
+
+/* ==================================================
+   AMIZADE
+================================================== */
+function enviarPedidoAmizade() {
+  const nome = document.getElementById('novoAmigoNome').value.trim();
+  const peerId = document.getElementById('novoAmigoId').value.trim();
+  if (!nome || !peerId) { alert('Preencha nome e ID'); return; }
+  if (peerId === state.user.id) { alert('Você não pode adicionar você mesmo!'); return; }
+  conectarAmigo(peerId);
+  setTimeout(() => {
+    const enviado = enviarParaPeer(peerId, {
+      tipo: 'amizade-pedido',
+      autor: { nome: state.user.nome, id: state.user.id, peerId: state.meuPeerId, avatar: state.user.avatar }
+    });
+    if (enviado) {
+      state.pedidosEnviados.push({ nome, peerId, data: Date.now() });
+      salvarEstado();
+      toast('📨 Pedido enviado', 'Aguardando ' + nome + ' aceitar...');
+      fecharModal('modalAmigo');
+      document.getElementById('novoAmigoNome').value = '';
+      document.getElementById('novoAmigoId').value = '';
+      renderAmigosSidebar();
+    } else alert('Não foi possível conectar. Verifique o ID.');
+  }, 1500);
+}
+
+function receberPedidoAmizade(deId, data) {
+  const { autor } = data;
+  state.amizadePendente = { deId, autor };
+  const avatarEl = document.getElementById('friendAvatar');
+  if (autor.avatar) avatarEl.innerHTML = `<img src="${autor.avatar}">`;
+  else avatarEl.innerHTML = autor.nome.charAt(0).toUpperCase();
+  document.getElementById('friendNome').textContent = autor.nome;
+  document.getElementById('friendInfo').innerHTML = `quer ser seu amigo`;
+  document.getElementById('friendModal').classList.add('active');
+  tocarSomChamadaLoop();
+}
+
+function aceitarAmizadeUI() {
+  const p = state.amizadePendente;
+  if (!p) return;
+  pararSomChamadaLoop();
+  document.getElementById('friendModal').classList.remove('active');
+  const jaTem = state.amigos.find(a => a.peerId === p.deId);
+  if (!jaTem) {
+    state.amigos.push({
+      id: 'ami-' + Date.now(),
+      nome: p.autor.nome,
+      sigla: p.autor.nome.charAt(0).toUpperCase(),
+      peerId: p.deId,
+      avatar: p.autor.avatar || null
+    });
+  }
+  enviarParaPeer(p.deId, { tipo: 'amizade-aceita', autor: { nome: state.user.nome, id: state.user.id, peerId: state.meuPeerId, avatar: state.user.avatar } });
+  toast('✅ Amizade aceita', p.autor.nome + ' agora é seu amigo!');
+  state.amizadePendente = null;
+  salvarEstado();
+  renderAmigosSidebar();
+  renderMembros();
+}
+
+function recusarAmizadeUI() {
+  const p = state.amizadePendente;
+  if (!p) return;
+  pararSomChamadaLoop();
+  document.getElementById('friendModal').classList.remove('active');
+  enviarParaPeer(p.deId, { tipo: 'amizade-recusada', autor: { nome: state.user.nome, id: state.user.id } });
+  state.amizadePendente = null;
+}
+
+function receberAceiteAmizade(deId, data) {
+  const pedido = state.pedidosEnviados.find(p => p.peerId === deId);
+  if (pedido) {
+    const jaTem = state.amigos.find(a => a.peerId === deId);
+    if (!jaTem) {
+      state.amigos.push({
+        id: 'ami-' + Date.now(),
+        nome: data.autor.nome,
+        sigla: data.autor.nome.charAt(0).toUpperCase(),
+        peerId: deId,
+        avatar: data.autor.avatar || null
+      });
+    }
+    state.pedidosEnviados = state.pedidosEnviados.filter(p => p.peerId !== deId);
+    salvarEstado();
+    toast('✅ ' + data.autor.nome + ' aceitou!', 'Agora vocês são amigos');
+    renderAmigosSidebar();
+    renderMembros();
+  }
+}
+
+function receberRejeiteAmizade(deId, data) {
+  state.pedidosEnviados = state.pedidosEnviados.filter(p => p.peerId !== deId);
+  salvarEstado();
+  toast('❌ Pedido recusado', data.autor.nome + ' recusou seu pedido.');
+  renderAmigosSidebar();
+}
+
+/* ==================================================
+   CONVITE SERVIDOR
+================================================== */
+function receberConvite(deId, data) {
+  const { autor, servidor } = data;
+  const container = document.getElementById('toastContainer');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `
+    <h4>🎉 CONVITE DE SERVIDOR</h4>
+    <p><b style="color:#fff">${autor.nome}</b> te convidou para <b style="color:#a855f7">${servidor.nome}</b></p>
+    <div style="display:flex;gap:8px;margin-top:12px;">
+      <button onclick='aceitarConvite(${JSON.stringify(servidor).replace(/'/g, "&apos;")})' style="flex:1;padding:8px;border-radius:8px;border:none;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-weight:700;cursor:pointer;letter-spacing:1px;font-family:Rajdhani,sans-serif;">ENTRAR</button>
+      <button onclick="this.closest('.toast').remove()" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(239,68,68,0.4);background:rgba(239,68,68,0.15);color:#ff5050;font-weight:700;cursor:pointer;letter-spacing:1px;font-family:Rajdhani,sans-serif;">IGNORAR</button>
+    </div>
+  `;
+  container.appendChild(el);
+  setTimeout(() => { if (el.parentNode) el.remove(); }, 60000);
+  tocarSomChamada();
+}
+
+function aceitarConvite(servidor) {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  if (state.servidores.find(s => s.id === servidor.id)) {
+    toast('ℹ️ Já está no servidor', 'Você já tem esse servidor.');
+    return;
+  }
+  state.servidores.push(servidor);
+  salvarEstado();
+  renderServidores();
+  selecionarServidor(servidor.id);
+  toast('✅ Entrou no servidor', servidor.nome);
+}
+
+function convidarParaServidor() {
+  const srv = state.servidores.find(s => s.id === state.servidorAtivo);
+  if (!srv) return;
+  let enviados = 0;
+  state.amigos.forEach(a => {
+    if (a.peerId && enviarParaPeer(a.peerId, {
+      tipo: 'convite',
+      autor: { nome: state.user.nome, id: state.user.id },
+      servidor: srv
+    })) enviados++;
+  });
+  if (enviados > 0) toast('📨 Convite enviado', enviados + ' amigo(s) receberam.');
+  else toast('⚠️ Sem amigos conectados', 'Adicione amigos primeiro.');
+}
+
+/* ==================================================
+   TOAST / ID
+================================================== */
+function toast(titulo, msg) {
+  const container = document.getElementById('toastContainer');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<h4>${titulo}</h4><p>${msg}</p>`;
+  container.appendChild(el);
+  setTimeout(() => { if (el.parentNode) el.remove(); }, 5000);
+}
+
+function copiarMeuID() {
+  navigator.clipboard.writeText(state.user.id).then(() => {
+    toast('✅ ID copiado!', state.user.id + ' — envie para amigos');
+  });
+}
+
+/* ==================================================
+   PERFIL
+================================================== */
+function abrirModalPerfil() {
+  document.getElementById('perfilNome').value = state.user.nome;
+  document.getElementById('perfilId').value = state.user.id;
+  const avatarEl = document.getElementById('perfilAvatarImg');
+  const inicialEl = document.getElementById('perfilAvatarInicial');
+  if (state.user.avatar) {
+    avatarEl.src = state.user.avatar;
+    avatarEl.style.display = 'block';
+    inicialEl.style.display = 'none';
+  } else {
+    avatarEl.style.display = 'none';
+    inicialEl.style.display = 'block';
+    inicialEl.textContent = state.user.sigla;
+  }
+  document.getElementById('modalPerfil').classList.add('active');
+}
+
+let perfilAvatarData = null;
+
+function uploadPerfilAvatar(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    perfilAvatarData = e.target.result;
+    document.getElementById('perfilAvatarImg').src = perfilAvatarData;
+    document.getElementById('perfilAvatarImg').style.display = 'block';
+    document.getElementById('perfilAvatarInicial').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function salvarPerfil() {
+  const nome = document.getElementById('perfilNome').value.trim();
+  if (!nome) { alert('Digite um nome'); return; }
+  state.user.nome = nome;
+  state.user.sigla = nome.charAt(0).toUpperCase();
+  if (perfilAvatarData) state.user.avatar = perfilAvatarData;
+  perfilAvatarData = null;
+  salvarEstado();
+  atualizarUIUsuario();
+  renderAmigosSidebar();
+  renderMembros();
+  fecharModal('modalPerfil');
+  state.amigos.forEach(a => {
+    if (a.peerId && state.conexoes[a.peerId]) {
+      enviarParaPeer(a.peerId, { tipo: 'ola', autor: { nome: state.user.nome, id: state.user.id, avatar: state.user.avatar } });
+    }
+  });
+  toast('✅ Perfil atualizado', 'Suas informações foram salvas.');
+}
+
+/* ==================================================
+   AMIGOS
+================================================== */
+function abrirAmigos() {
+  state.modo = 'dm';
+  state.amigoAtivo = null;
+  document.getElementById('dmBtn').classList.add('active');
+  document.querySelectorAll('#serversList .server-icon').forEach(x => x.classList.remove('active'));
+  document.getElementById('serverName').textContent = 'MENSAGENS DIRETAS';
+  renderAmigosSidebar();
+  mostrarInterfaceChat();
+  salvarEstado();
+}
+
+function renderAmigosSidebar() {
+  const container = document.getElementById('channelsScroll');
+  container.innerHTML = '';
+  if (state.pedidosRecebidos.length > 0) {
+    const pedHeader = document.createElement('div');
+    pedHeader.className = 'cat-header';
+    pedHeader.innerHTML = `<span>PEDIDOS PENDENTES — ${state.pedidosRecebidos.length}</span>`;
+    container.appendChild(pedHeader);
+    state.pedidosRecebidos.forEach(p => {
+      const el = document.createElement('div');
+      el.className = 'friend-item';
+      el.innerHTML = `
+        <div class="friend-item-avatar" style="background:linear-gradient(135deg,#ef4444,#b91c1c);">${p.autor.nome.charAt(0).toUpperCase()}</div>
+        <div class="friend-item-info">
+          <div class="friend-item-name">${p.autor.nome}</div>
+          <div class="friend-item-status">Aguardando...</div>
+        </div>
+      `;
+      container.appendChild(el);
+    });
+  }
+  const header = document.createElement('div');
+  header.className = 'cat-header';
+  header.innerHTML = `<span>AMIGOS — ${state.amigos.length}</span>`;
+  container.appendChild(header);
+  if (state.amigos.length === 0 && state.pedidosEnviados.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'empty-state';
+    empty.innerHTML = `<strong>NENHUM AMIGO</strong>Clique no ícone verde 👤 para adicionar.`;
+    container.appendChild(empty);
+  }
+  state.pedidosEnviados.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'friend-item';
+    el.innerHTML = `
+      <div class="friend-item-avatar offline">${p.nome.charAt(0).toUpperCase()}</div>
+      <div class="friend-item-info">
+        <div class="friend-item-name">${p.nome}</div>
+        <div class="friend-item-status">⏳ Aguardando...</div>
+      </div>
+    `;
+    container.appendChild(el);
+  });
+  state.amigos.forEach(amigo => {
+    const el = document.createElement('div');
+    el.className = 'friend-item' + (state.amigoAtivo === amigo.id ? ' active' : '');
+    const conectado = amigo.peerId && state.conexoes[amigo.peerId];
+    el.innerHTML = `
+      <div class="friend-item-avatar ${conectado ? '' : 'offline'}">
+        ${amigo.avatar ? `<img src="${amigo.avatar}">` : amigo.sigla}
+      </div>
+      <div class="friend-item-info">
+        <div class="friend-item-name">${amigo.nome}</div>
+        <div class="friend-item-status">${conectado ? '🟢 Online' : '⚪ Offline'}</div>
+      </div>
+      <div class="friend-item-call" onclick="event.stopPropagation(); ligarPrivado('${amigo.nome}')" title="Ligar">
+        <svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
+      </div>
+    `;
+    el.onclick = () => abrirConversaAmigo(amigo.id);
+    container.appendChild(el);
+  });
+}
+
+function abrirConversaAmigo(id) {
+  const amigo = state.amigos.find(a => a.id === id);
+  if (!amigo) return;
+  state.amigoAtivo = id;
+  state.modo = 'dm';
+  if (amigo.peerId) conectarAmigo(amigo.peerId);
+  document.getElementById('headerIcon').textContent = '@';
+  document.getElementById('headerName').textContent = amigo.nome;
+  document.getElementById('headerDesc').textContent = amigo.peerId ? 'Chat em tempo real' : 'Sem ID';
+  document.getElementById('headerActions').innerHTML = `
+    <button class="icon-btn call-friend" onclick="ligarPrivado('${amigo.nome}')" title="Ligar">
+      <svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
+    </button>
+  `;
+  renderAmigosSidebar();
+  renderMensagensDM(amigo);
+  mostrarInterfaceChat();
+  salvarEstado();
+}
+
+function renderMensagensDM(amigo) {
+  const area = document.getElementById('chatArea');
+  const key = 'dm-' + amigo.id;
+  const msgs = state.mensagens[key] || [];
+  area.innerHTML = `
+    <div class="welcome-block">
+      <h1>CONVERSA COM <span>${amigo.nome.toUpperCase()}</span></h1>
+      <p>Chat em tempo real ativo</p>
+    </div>
+  `;
+  msgs.forEach(m => {
+    const msg = document.createElement('div');
+    msg.className = 'msg' + (m.de ? ' me' : '');
+    msg.innerHTML = `
+      <div class="msg-avatar">${m.autor.charAt(0).toUpperCase()}</div>
+      <div class="msg-body">
+        <div class="msg-top">
+          <span class="msg-name">${m.autor}</span>
+          <span class="msg-time">${m.hora}</span>
+        </div>
+        <div class="msg-text">${m.texto || ''}${m.imagem ? `<img src="${m.imagem}">` : ''}</div>
+      </div>
+    `;
+    area.appendChild(msg);
+  });
+  area.scrollTop = area.scrollHeight;
+}
+
+function abrirModalAmigo() { document.getElementById('modalAmigo').classList.add('active'); }
+
+/* ==================================================
+   SERVIDOR — CRIAR / EDITAR / EXCLUIR
+================================================== */
+function criarServidor() {
+  const nome = document.getElementById('novoServidorNome').value.trim();
+  const sigla = document.getElementById('novoServidorSigla').value.trim().toUpperCase();
+  if (!nome || !sigla) { alert('Preencha todos os campos'); return; }
+  const servidor = {
+    id: 'srv-' + Date.now(), nome, sigla,
+    dono: state.user.id,
+    cargos: [],
+    categorias: [{
+      id: 'cat-' + Date.now(), nome: 'GERAL', aberta: true,
+      canais: [{ id: 'ch-' + Date.now() + '-1', nome: 'geral', tipo: 'text', desc: 'Chat geral' }]
+    }]
+  };
+  state.servidores.push(servidor);
+  salvarEstado();
+  fecharModal('modalServidor');
+  document.getElementById('novoServidorNome').value = '';
+  document.getElementById('novoServidorSigla').value = '';
+  renderServidores();
+  selecionarServidor(servidor.id);
+}
+
+function abrirConfigServidor() {
+  const srv = state.servidores.find(s => s.id === state.servidorAtivo);
+  if (!srv) { toast('⚠️ Nenhum servidor', 'Crie ou selecione um servidor primeiro'); return; }
+  document.getElementById('editServidorNome').value = srv.nome;
+  document.getElementById('editServidorSigla').value = srv.sigla;
+  renderCargos();
+  // volta pra aba geral
+  document.querySelectorAll('.config-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.config-content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.config-tab')[0].classList.add('active');
+  document.getElementById('aba-geral').classList.add('active');
+  document.getElementById('modalConfigServidor').classList.add('active');
+}
+
+function mudarAba(idAba, tabEl) {
+  document.querySelectorAll('.config-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.config-content').forEach(c => c.classList.remove('active'));
+  tabEl.classList.add('active');
+  document.getElementById(idAba).classList.add('active');
+  if (idAba === 'aba-cargos') renderCargos();
+}
+
+function salvarEdicaoServidor() {
+  const nome = document.getElementById('editServidorNome').value.trim();
+  const sigla = document.getElementById('editServidorSigla').value.trim().toUpperCase();
+  if (!nome || !sigla) { alert('Preencha nome e sigla'); return; }
+  const srv = state.servidores.find(s => s.id === state.servidorAtivo);
+  if (!srv) return;
+  srv.nome = nome;
+  srv.sigla = sigla;
+  salvarEstado();
+  renderServidores();
+  renderCanais();
+  enviarServidorUpdate();
+  fecharModal('modalConfigServidor');
+  toast('✅ Servidor atualizado', nome);
+}
+
+function excluirServidor() {
+  const srv = state.servidores.find(s => s.id === state.servidorAtivo);
+  if (!srv) return;
+  if (!confirm('Tem certeza que quer excluir o servidor "' + srv.nome + '"? Essa ação não pode ser desfeita.')) return;
+
+  enviarParaTodos({ tipo: 'servidor-delete', autor: { nome: state.user.nome, id: state.user.id }, servidorId: srv.id });
+
+  state.servidores = state.servidores.filter(s => s.id !== srv.id);
+  state.servidorAtivo = null;
+  state.canalAtivo = null;
+  salvarEstado();
+  fecharModal('modalConfigServidor');
+  renderServidores();
+  renderCanais();
+  mostrarInterfaceChat();
+  document.getElementById('serverName').textContent = 'SEM SERVIDOR';
+  toast('🗑️ Servidor excluído', srv.nome);
+}
+
+/* ==================================================
+   CARGOS
+================================================== */
+function renderCargos() {
+  const srv = state.servidores.find(s => s.id === state.servidorAtivo);
+  const lista = document.getElementById('listaCargos');
+  if (!srv) { lista.innerHTML = ''; return; }
+  if (!srv.cargos) srv.cargos = [];
+
+  if (srv.cargos.length === 0) {
+    lista.innerHTML = `<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">Nenhum cargo criado ainda.</div>`;
+    return;
+  }
+
+  lista.innerHTML = '';
+  srv.cargos.forEach(cargo => {
+    const el = document.createElement('div');
+    el.className = 'cargo-item';
+    el.innerHTML = `
+      <div class="cargo-cor" style="background:${cargo.cor};"></div>
+      <div class="cargo-info">
+        <div class="cargo-nome">${cargo.nome}</div>
+        <div class="cargo-desc">${cargo.cor}</div>
+      </div>
+      <div class="cargo-actions">
+        <button class="cargo-btn edit" onclick="editarCargo('${cargo.id}')" title="Editar">✏️</button>
+        <button class="cargo-btn del" onclick="deletarCargo('${cargo.id}')" title="Excluir">🗑️</button>
+      </div>
+    `;
+    lista.appendChild(el);
+  });
+}
+
+function abrirModalCriarCargo() {
+  state.editandoCargoId = null;
+  state.corSelecionadaCargo = CORES_CARGOS[0];
+  document.getElementById('cargoModalTitulo').innerHTML = 'CRIAR <span>CARGO</span>';
+  document.getElementById('cargoNome').value = '';
+  renderColorPicker();
+  document.getElementById('modalCargo').classList.add('active');
+}
+
+function editarCargo(cargoId) {
+  const srv = state.servidores.find(s => s.id === state.servidorAtivo);
+  if (!srv) return;
+  const cargo = srv.cargos.find(c => c.id === cargoId);
+  if (!cargo) return;
+  state.editandoCargoId = cargoId;
+  state.corSelecionadaCargo = cargo.cor;
+  document.getElementById('cargoModalTitulo').innerHTML = 'EDITAR <span>CARGO</span>';
+  document.getElementById('cargoNome').value = cargo.nome;
+  renderColorPicker();
+  document.getElementById('modalCargo').classList.add('active');
+}
+
+function renderColorPicker() {
+  const picker = document.getElementById('colorPicker');
+  picker.innerHTML = '';
+  CORES_CARGOS.forEach(cor => {
+    const el = document.createElement('div');
+    el.className = 'color-option' + (cor === state.corSelecionadaCargo ? ' selected' : '');
+    el.style.background = cor;
+    el.onclick = () => {
+      state.corSelecionadaCargo = cor;
+      renderColorPicker();
+    };
+    picker.appendChild(el);
+  });
+}
+
+function salvarCargo() {
+  const nome = document.getElementById('cargoNome').value.trim();
+  if (!nome) { alert('Digite o nome do cargo'); return; }
+  const srv = state.servidores.find(s => s.id === state.servidorAtivo);
+  if (!srv) return;
+  if (!srv.cargos) srv.cargos = [];
+
+  if (state.editandoCargoId) {
+    const cargo = srv.cargos.find(c => c.id === state.editandoCargoId);
+    if (cargo) {
+      cargo.nome = nome;
+      cargo.cor = state.corSelecionadaCargo;
+    }
+  } else {
+    srv.cargos.push({
+      id: 'cargo-' + Date.now(),
+      nome,
+      cor: state.corSelecionadaCargo
+    });
+  }
+
+  salvarEstado();
+  renderCargos();
+  renderMembros();
+  enviarParaTodos({ tipo: 'cargo-update', servidorId: srv.id, cargos: srv.cargos });
+  fecharModal('modalCargo');
+  toast('✅ Cargo salvo', nome);
+}
+
+function deletarCargo(cargoId) {
+  const srv = state.servidores.find(s => s.id === state.servidorAtivo);
+  if (!srv) return;
+  if (!confirm('Excluir esse cargo?')) return;
+  srv.cargos = srv.cargos.filter(c => c.id !== cargoId);
+  salvarEstado();
+  renderCargos();
+  renderMembros();
+  enviarParaTodos({ tipo: 'cargo-update', servidorId: srv.id, cargos: srv.cargos });
+  toast('🗑️ Cargo excluído', '');
+}
+
+/* ==================================================
+   ATRIBUIR CARGOS
+================================================== */
+function abrirAtribuirCargo(peerId, nome) {
+  const srv = state.servidores.find(s => s.id === state.servidorAtivo);
+  if (!srv) return;
+  if (!srv.cargos || srv.cargos.length === 0) {
+    toast('⚠️ Sem cargos', 'Crie um cargo primeiro em ⚙️');
+    return;
+  }
+  state.atribuirParaPeerId = peerId;
+  document.getElementById('atribuirMembroNome').textContent = nome;
+
+  const lista = document.getElementById('listaCargosAtribuir');
+  lista.innerHTML = '';
+  const membroCargos = srv.membrosCargos && srv.membrosCargos[peerId] ? srv.membrosCargos[peerId] : [];
+
+  srv.cargos.forEach(cargo => {
+    const temCargo = membroCargos.includes(cargo.id);
+    const el = document.createElement('div');
+    el.className = 'pick-item' + (temCargo ? ' selected' : '');
+    el.innerHTML = `
+      <div class="pick-item-check"></div>
+      <div class="cargo-cor" style="background:${cargo.cor};width:24px;height:24px;"></div>
+      <div class="pick-item-info">
+        <div class="pick-item-name">${cargo.nome}</div>
+      </div>
+    `;
+    el.onclick = () => {
+      if (!srv.membrosCargos) srv.membrosCargos = {};
+      if (!srv.membrosCargos[peerId]) srv.membrosCargos[peerId] = [];
+      const arr = srv.membrosCargos[peerId];
+      if (arr.includes(cargo.id)) {
+        srv.membrosCargos[peerId] = arr.filter(id => id !== cargo.id);
+        el.classList.remove('selected');
+      } else {
+        arr.push(cargo.id);
+        el.classList.add('selected');
+      }
+      salvarEstado();
+      renderMembros();
+      enviarParaTodos({ tipo: 'servidor-update', autor: { nome: state.user.nome, id: state.user.id }, servidor: srv });
+    };
+    lista.appendChild(el);
+  });
+
+  document.getElementById('modalAtribuirCargo').classList.add('active');
+}
+
+/* ==================================================
+   RENDER SERVIDORES
+================================================== */
+function renderServidores() {
+  const list = document.getElementById('serversList');
+  list.innerHTML = '';
+  state.servidores.forEach(srv => {
+    const el = document.createElement('div');
+    el.className = 'server-icon' + (srv.id === state.servidorAtivo && state.modo === 'servidor' ? ' active' : '');
+    el.textContent = srv.sigla;
+    el.title = srv.nome;
+    el.onclick = () => selecionarServidor(srv.id);
+    list.appendChild(el);
+  });
+}
+
+function selecionarServidor(id) {
+  state.servidorAtivo = id;
+  state.modo = 'servidor';
+  state.amigoAtivo = null;
+  document.getElementById('dmBtn').classList.remove('active');
+  const srv = state.servidores.find(s => s.id === id);
+  if (!srv) return;
+
+  let primeiroCanal = null;
+  for (const cat of srv.categorias) {
+    const ch = cat.canais.find(c => c.tipo === 'text');
+    if (ch) { primeiroCanal = ch; break; }
+  }
+  state.canalAtivo = primeiroCanal ? primeiroCanal.id : null;
+
+  document.getElementById('headerActions').innerHTML = `
+    <button class="icon-btn invite-friend" onclick="convidarParaServidor()" title="Convidar amigos">
+      <svg viewBox="0 0 24 24"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+    </button>
+    <button class="icon-btn call-friend" onclick="chamarSala()" title="Chamar para call">
+      <svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
+    </button>
+    <button class="icon-btn" onclick="abrirModalCanal()" title="Criar canal">
+      <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    </button>
+    <button class="icon-btn" onclick="abrirModalCategoria()" title="Criar categoria">
+      <svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+    </button>
+  `;
+
+  renderServidores();
+  renderCanais();
+  mostrarInterfaceChat();
+  salvarEstado();
+}
+
+function renderCanais() {
+  const container = document.getElementById('channelsScroll');
+  const srv = state.servidores.find(s => s.id === state.servidorAtivo);
+  if (!srv) return;
+  document.getElementById('serverName').innerHTML = srv.nome + ' <span>•</span>';
+  container.innerHTML = '';
+  srv.categorias.forEach(cat => {
+    const header = document.createElement('div');
+    header.className = 'cat-header' + (cat.aberta ? '' : ' closed');
+    header.innerHTML = `<span>${cat.nome}</span><span class="arrow">▾</span>`;
+    header.onclick = () => { cat.aberta = !cat.aberta; renderCanais(); };
+    container.appendChild(header);
+    if (cat.aberta) {
+      cat.canais.forEach(ch => {
+        const el = document.createElement('div');
+        el.className = 'channel' + (ch.id === state.canalAtivo ? ' active' : '') + (ch.tipo === 'voice' ? ' voice' : '');
+        el.innerHTML = `<span class="channel-icon">${ch.tipo === 'voice' ? '🔊' : '#'}</span><span class="channel-name">${ch.nome}</span>`;
+        el.onclick = () => abrirCanal(ch.id);
+        container.appendChild(el);
+      });
+    }
+  });
+  const sel = document.getElementById('novoCanalCategoria');
+  sel.innerHTML = '';
+  srv.categorias.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c.id; o.textContent = c.nome;
+    sel.appendChild(o);
+  });
+}
+
+function mostrarInterfaceChat() {
+  const emDM = state.modo === 'dm';
+  const temConversa = emDM ? !!state.amigoAtivo : (state.servidorAtivo && state.canalAtivo);
+  if (!temConversa) {
+    document.getElementById('noServer').style.display = 'flex';
+    document.getElementById('chatHeader').style.display = 'none';
+    document.getElementById('chatArea').style.display = 'none';
+    document.getElementById('chatInputWrap').style.display = 'none';
+    document.getElementById('membersBar').style.display = 'none';
+    return;
+  }
+  document.getElementById('noServer').style.display = 'none';
+  document.getElementById('chatHeader').style.display = 'flex';
+  document.getElementById('chatArea').style.display = 'block';
+  document.getElementById('chatInputWrap').style.display = 'block';
+  document.getElementById('membersBar').style.display = 'flex';
+  renderMembros();
+  if (!emDM && state.canalAtivo) abrirCanal(state.canalAtivo, true);
+}
+
+function abrirCanal(id, semRender = false) {
+  const srv = state.servidores.find(s => s.id === state.servidorAtivo);
+  if (!srv) return;
+  let canal = null;
+  for (const cat of srv.categorias) {
+    const found = cat.canais.find(x => x.id === id);
+    if (found) { canal = found; break; }
+  }
+  if (!canal) return;
+  state.canalAtivo = id;
+  state.modo = 'servidor';
+  document.getElementById('headerIcon').textContent = canal.tipo === 'voice' ? '🔊' : '#';
+  document.getElementById('headerName').textContent = canal.nome;
+  document.getElementById('headerDesc').textContent = canal.desc || '';
+  if (!semRender) renderCanais();
+  if (canal.tipo === 'text') renderMensagensCanal(canal);
+  else {
+    sairDaCall();
+    document.getElementById('voiceTitle').textContent = '🔊 ' + canal.nome;
+    abrirJitsi('BRISCH-' + srv.id + '-' + canal.id);
+  }
+  salvarEstado();
+}
+
+function renderMensagensCanal(canal) {
+  const area = document.getElementById('chatArea');
+  const key = 'ch-' + canal.id;
+  const msgs = state.mensagens[key] || [];
+  area.innerHTML = `
+    <div class="welcome-block">
+      <h1>BEM-VINDO AO <span>#${canal.nome.toUpperCase()}</span></h1>
+      <p>Canal em tempo real</p>
+    </div>
+  `;
+  msgs.forEach(m => {
+    const msg = document.createElement('div');
+    msg.className = 'msg' + (m.de ? ' me' : '');
+    msg.innerHTML = `
+      <div class="msg-avatar">${m.autor.charAt(0).toUpperCase()}</div>
+      <div class="msg-body">
+        <div class="msg-top">
+          <span class="msg-name">${m.autor}</span>
+          <span class="msg-time">${m.hora}</span>
+        </div>
+        <div class="msg-text">${m.texto || ''}${m.imagem ? `<img src="${m.imagem}">` : ''}</div>
+      </div>
+    `;
+    area.appendChild(msg);
+  });
+  area.scrollTop = area.scrollHeight;
+}
+
+function abrirModalCanal() {
+  if (state.modo === 'dm') { alert('Volte a um servidor.'); return; }
+  const srv = state.servidores.find(s => s.id === state.servidorAtivo);
+  if (!srv) { alert('Crie um servidor primeiro!'); abrirModalServidor(); return; }
+  renderCanais();
+  document.getElementById('modalCanal').classList.add('active');
+}
+function abrirModalCategoria() {
+  if (state.modo === 'dm') { alert('Volte a um servidor.'); return; }
+  const srv = state.servidores.find(s => s.id === state.servidorAtivo);
+  if (!srv) { alert('Crie um servidor primeiro!'); abrirModalServidor(); return; }
+  document.getElementById('modalCategoria').classList.add('active');
+}
+function criarCanal() {
+  const tipo = document.getElementById('novoCanalTipo').value;
+  const nome = document.getElementById('novoCanalNome').value.trim();
+  const catId = document.getElementById('novoCanalCategoria').value;
+  if (!nome) { alert('Digite o nome do canal'); return; }
+  const srv = state.servidores.find(s => s.id === state.servidorAtivo);
+  const cat = srv.categorias.find(c => c.id === catId);
+  if (!cat) return;
+  cat.canais.push({ id: 'ch-' + Date.now(), nome, tipo, desc: tipo === 'voice' ? 'Voz / Vídeo' : 'Chat' });
+  cat.aberta = true;
+  salvarEstado();
+  renderCanais();
+  enviarServidorUpdate();
+  fecharModal('modalCanal');
+  document.getElementById('novoCanalNome').value = '';
+  toast('✅ Canal criado', 'Todos no servidor foram atualizados');
+}
+function criarCategoria() {
+  const nome = document.getElementById('novaCategoriaNome').value.trim().toUpperCase();
+  if (!nome) { alert('Digite o nome da categoria'); return; }
+  const srv = state.servidores.find(s => s.id === state.servidorAtivo);
+  srv.categorias.push({ id: 'cat-' + Date.now(), nome, aberta: true, canais: [] });
+  salvarEstado();
+  renderCanais();
+  enviarServidorUpdate();
+  fecharModal('modalCategoria');
+  document.getElementById('novaCategoriaNome').value = '';
+  toast('✅ Categoria criada', 'Todos no servidor foram atualizados');
+}
+function abrirModalServidor() { document.getElementById('modalServidor').classList.add('active'); }
+function fecharModal(id) { document.getElementById(id).classList.remove('active'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); });
+});
+
+/* ==================================================
+   JITSI — sem anúncio + reconexão + background
+================================================== */
+let jitsiSalaAtual = null;
+let jitsiReconectando = false;
+let jitsiSaindoDeProposito = false;
+
+function abrirJitsi(nomeSala) {
+  const voiceArea = document.getElementById('voiceArea');
+  if (state.jitsiApi) {
+    try { state.jitsiApi.dispose(); } catch(e) {}
+    state.jitsiApi = null;
+  }
+  voiceArea.classList.add('active');
+  jitsiSalaAtual = nomeSala;
+  jitsiSaindoDeProposito = false;
+
+  ativarKeepAlive();
+
+  const roomName = 'BRISCORD-' + nomeSala.replace(/[^a-zA-Z0-9-]/g, '');
+
+  const options = {
+    roomName: roomName,
+    width: '100%',
+    height: '100%',
+    parentNode: document.getElementById('jitsi-container'),
+    userInfo: { displayName: state.user.nome, email: '' },
+    configOverwrite: {
+      startWithAudioMuted: true,
+      startWithVideoMuted: true,
+      prejoinPageEnabled: false,
+      prejoinConfig: { enabled: false },
+      disableDeepLinking: true,
+      requireDisplayName: false,
+      enableWelcomePage: false,
+      enableClosePage: false,       // <- Remove tela de "você saiu" com anúncio
+      hideConferenceSubject: true,
+      hideConferenceTimer: false,
+      // Bloqueia tela de publicidade/anúncio
+      disableInviteFunctions: true,
+      enableCalendarIntegration: false,
+      toolbarButtons: ['microphone', 'camera', 'desktop', 'chat', 'raisehand', 'tileview', 'settings', 'hangup'],
+      // Manter conexão viva em segundo plano
+      channelLastN: -1,
+      enableLayerSuspension: false,
+      disableSimulcast: false,
+      enableIceRestart: true,
+      p2p: { enabled: true, preferredCodec: 'VP9', disableH264: false, useStunTurn: true },
+      audioLevelsInterval: 200,
+      useRoomAsName: false,
+      enableNoAudioDetection: false,
+      enableNoisyMicDetection: false,
+      disableTileEnlargement: false,
+      notifications: [],
+      disabledNotifications: ['noisyMic', 'noAudio', 'welcome', 'joinLeave', 'recording', 'dialog']
+    },
+    interfaceConfigOverwrite: {
+      SHOW_JITSI_WATERMARK: false,
+      SHOW_WATERMARK_FOR_GUESTS: false,
+      SHOW_BRAND_WATERMARK: false,
+      SHOW_POWERED_BY: false,
+      GENERATE_ROOMNAMES_ON_WELCOME_PAGE: false,
+      DISPLAY_WELCOME_PAGE_CONTENT: false,
+      DISPLAY_WELCOME_FOOTER: false,
+      DEFAULT_BACKGROUND: '#05060d',
+      TOOLBAR_ALWAYS_VISIBLE: true,
+      DISABLE_JOIN_LEAVE_NOTIFICATIONS: true,
+      MOBILE_APP_PROMO: false,
+      HIDE_INVITE_MORE_HEADER: true,
+      ENABLE_FEEDBACK_ANIMATION: false,
+      RECENT_LIST_ENABLED: false
+    }
+  };
+
+  state.jitsiApi = new JitsiMeetExternalAPI('meet.jit.si', options);
+  state.micOn = false;
+  state.camOn = false;
+  state.sharing = false;
+  atualizarBotoesVoz();
+
+  state.jitsiApi.addEventListener('audioMuteStatusChanged', e => { state.micOn = !e.muted; atualizarBotoesVoz(); });
+  state.jitsiApi.addEventListener('videoMuteStatusChanged', e => { state.camOn = !e.muted; atualizarBotoesVoz(); });
+  state.jitsiApi.addEventListener('screenSharingStatusChanged', e => { state.sharing = e.on; atualizarBotoesVoz(); });
+
+  // Reconexão automática
+  state.jitsiApi.addEventListener('videoConferenceLeft', () => {
+    console.log('[JITSI] Saiu');
+    if (jitsiSaindoDeProposito) return;
+    if (document.getElementById('voiceArea').classList.contains('active') && !jitsiReconectando) {
+      jitsiReconectando = true;
+      toast('🔄 Reconectando...', 'Aguarde');
+      setTimeout(() => {
+        if (jitsiSalaAtual && document.getElementById('voiceArea').classList.contains('active') && !jitsiSaindoDeProposito) {
+          abrirJitsi(jitsiSalaAtual);
+        }
+        jitsiReconectando = false;
+      }, 2000);
+    }
+  });
+
+  // Áudio em background
+  document.addEventListener('visibilitychange', handlerVisibility);
+}
+
+function handlerVisibility() {
+  if (!document.hidden && state.jitsiApi && document.getElementById('voiceArea').classList.contains('active')) {
+    console.log('[VISIBILITY] Aba voltou');
+  }
+}
+
+function toggleMic() { if (state.jitsiApi) state.jitsiApi.executeCommand('toggleAudio'); }
+function toggleCam() { if (state.jitsiApi) state.jitsiApi.executeCommand('toggleVideo'); }
+function toggleShare() { if (state.jitsiApi) state.jitsiApi.executeCommand('toggleShareScreen'); }
+function atualizarBotoesVoz() {
+  document.getElementById('btnMic').classList.toggle('ativo', state.micOn);
+  document.getElementById('btnCam').classList.toggle('ativo', state.camOn);
+  document.getElementById('btnShare').classList.toggle('ativo', state.sharing);
+}
+
+function sairDaCall() {
+  jitsiSaindoDeProposito = true;
+  document.getElementById('voiceArea').classList.remove('active');
+  if (state.jitsiApi) {
+    try { state.jitsiApi.dispose(); } catch(e) {}
+    state.jitsiApi = null;
+  }
+  jitsiSalaAtual = null;
+  desativarKeepAlive();
+  // Sem toast de saída pra não parecer anúncio
+}
+
+/* ==================================================
+   ENVIAR MENSAGEM
+================================================== */
+function enviarMensagem() {
+  const input = document.getElementById('msgInput');
+  const texto = input.value.trim();
+  if (!texto) return;
+  const autor = state.user.nome;
+  const hora = horaAtual();
+  if (state.modo === 'dm' && state.amigoAtivo) {
+    const amigo = state.amigos.find(a => a.id === state.amigoAtivo);
+    const key = 'dm-' + state.amigoAtivo;
+    if (!state.mensagens[key]) state.mensagens[key] = [];
+    state.mensagens[key].push({ autor, texto, hora, de: true });
+    adicionarBalao(autor, texto, null, true);
+    salvarEstado();
+    if (amigo && amigo.peerId) {
+      const ok = enviarParaPeer(amigo.peerId, { tipo: 'chat', autor, texto, hora, amigoDe: amigo.peerId });
+      if (!ok) toast('⚠️ Não entregue', 'Amigo offline');
+    }
+  } else if (state.canalAtivo) {
+    const srv = state.servidores.find(s => s.id === state.servidorAtivo);
+    const key = 'ch-' + state.canalAtivo;
+    if (!state.mensagens[key]) state.mensagens[key] = [];
+    state.mensagens[key].push({ autor, texto, hora, de: true });
+    adicionarBalao(autor, texto, null, true);
+    salvarEstado();
+    enviarParaTodos({ tipo: 'chat', autor, texto, hora, canalId: state.canalAtivo, servidorId: srv.id });
+  }
+  input.value = '';
+  input.focus();
+}
+
+function enviarImagem(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const autor = state.user.nome;
+    const hora = horaAtual();
+    const imagem = e.target.result;
+    if (state.modo === 'dm' && state.amigoAtivo) {
+      const amigo = state.amigos.find(a => a.id === state.amigoAtivo);
+      const key = 'dm-' + state.amigoAtivo;
+      if (!state.mensagens[key]) state.mensagens[key] = [];
+      state.mensagens[key].push({ autor, texto: '', imagem, hora, de: true });
+      adicionarBalao(autor, '', imagem, true);
+      salvarEstado();
+      if (amigo && amigo.peerId) {
+        enviarParaPeer(amigo.peerId, { tipo: 'chat', autor, texto: '', imagem, hora, amigoDe: amigo.peerId });
+      }
+    } else if (state.canalAtivo) {
+      const srv = state.servidores.find(s => s.id === state.servidorAtivo);
+      const key = 'ch-' + state.canalAtivo;
+      if (!state.mensagens[key]) state.mensagens[key] = [];
+      state.mensagens[key].push({ autor, texto: '', imagem, hora, de: true });
+      adicionarBalao(autor, '', imagem, true);
+      salvarEstado();
+      enviarParaTodos({ tipo: 'chat', autor, texto: '', imagem, hora, canalId: state.canalAtivo, servidorId: srv.id });
+    }
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+function adicionarBalao(nome, texto, imagemUrl, isMe) {
+  const area = document.getElementById('chatArea');
+  const hora = horaAtual();
+  const msg = document.createElement('div');
+  msg.className = 'msg' + (isMe ? ' me' : '');
+  msg.innerHTML = `
+    <div class="msg-avatar">${nome.charAt(0).toUpperCase()}</div>
+    <div class="msg-body">
+      <div class="msg-top">
+        <span class="msg-name">${nome}</span>
+        <span class="msg-time">Hoje às ${hora}</span>
+      </div>
+      <div class="msg-text">${texto || ''}${imagemUrl ? `<img src="${imagemUrl}">` : ''}</div>
+    </div>
+  `;
+  area.appendChild(msg);
+  area.scrollTop = area.scrollHeight;
+}
+
+function horaAtual() {
+  const d = new Date();
+  return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+}
+
+/* ==================================================
+   MEMBROS
+================================================== */
+function renderMembros() {
+  const container = document.getElementById('membersScroll');
+  container.innerHTML = '';
+  let count = 1;
+  const srv = state.servidores.find(s => s.id === state.servidorAtivo);
+
+  if (state.modo === 'dm' && state.amigoAtivo) {
+    const amigo = state.amigos.find(a => a.id === state.amigoAtivo);
+    if (amigo) {
+      const conectado = amigo.peerId && state.conexoes[amigo.peerId];
+      const el = document.createElement('div');
+      el.className = 'member';
+      el.innerHTML = `
+        <div class="member-avatar">${amigo.avatar ? `<img src="${amigo.avatar}">` : amigo.sigla}</div>
+        <div class="member-info">
+          <div class="member-name">${amigo.nome}</div>
+          <div class="member-status">${conectado ? 'Online' : 'Offline'}</div>
+        </div>
+        <div class="member-call" onclick="ligarPrivado('${amigo.nome}')" title="Ligar">
+          <svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
+        </div>
+      `;
+      container.appendChild(el);
+    }
+  } else {
+    const todos = [{ nome: state.user.nome, sigla: state.user.sigla, avatar: state.user.avatar, eu: true, peerId: state.meuPeerId }, ...state.amigos.map(a => ({ nome: a.nome, sigla: a.sigla, avatar: a.avatar, eu: false, peerId: a.peerId }))];
+    todos.forEach(m => {
+      const el = document.createElement('div');
+      el.className = 'member';
+
+      // Cargos do membro
+      let cargosHTML = '';
+      if (srv && srv.cargos && srv.membrosCargos && srv.membrosCargos[m.peerId]) {
+        const ids = srv.membrosCargos[m.peerId];
+        if (ids.length > 0) {
+          cargosHTML = '<div class="member-cargos">';
+          ids.forEach(id => {
+            const cargo = srv.cargos.find(c => c.id === id);
+            if (cargo) cargosHTML += `<span class="member-cargo-tag" style="background:${cargo.cor};">${cargo.nome}</span>`;
+          });
+          cargosHTML += '</div>';
+        }
+      }
+
+      el.innerHTML = `
+        <div class="member-avatar">${m.avatar ? `<img src="${m.avatar}">` : m.sigla}</div>
+        <div class="member-info">
+          <div class="member-name">${m.nome}</div>
+          <div class="member-status">Online</div>
+          ${cargosHTML}
+        </div>
+        ${!m.eu ? `
+          <div class="member-call" onclick="abrirAtribuirCargo('${m.peerId}', '${m.nome.replace(/'/g, "")}')" title="Atribuir cargo">
+            <svg viewBox="0 0 24 24" style="fill:#eab308;"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+          </div>
+          <div class="member-call" onclick="ligarPrivado('${m.nome}')" title="Ligar" style="opacity:1;margin-left:4px;">
+            <svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
+          </div>
+        ` : ''}
+      `;
+      container.appendChild(el);
+      count++;
+    });
+  }
+  document.getElementById('membersCount').textContent = count;
+}
+
+/* ==================================================
+   BOOT
+================================================== */
+window.addEventListener('DOMContentLoaded', () => {
+  if (carregarEstado()) {
+    document.getElementById('loginSub').textContent = 'Bem-vindo de volta, ' + state.user.nome;
+    document.getElementById('loginNome').value = state.user.nome;
+    document.getElementById('loginAvatarInitial').textContent = state.user.sigla;
+    if (state.user.avatar) {
+      loginAvatarData = state.user.avatar;
+      document.getElementById('loginAvatarImg').src = state.user.avatar;
+      document.getElementById('loginAvatarImg').style.display = 'block';
+      document.getElementById('loginAvatarInitial').style.display = 'none';
+    }
+  } else {
+    document.getElementById('loginSub').textContent = 'Crie sua conta';
+  }
+});
+
+// Sair com intenção quando fechar aba
+window.addEventListener('beforeunload', () => {
+  jitsiSaindoDeProposito = true;
+});
+</script>
+
+</body>
+</html>
